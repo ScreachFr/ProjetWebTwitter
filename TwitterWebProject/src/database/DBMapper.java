@@ -31,11 +31,11 @@ public class DBMapper {
 
 		return DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE,	LOGIN, PASSWORD);
 	}
-
 	
-	public static ResultSet executeQuery(String query, Object... args) throws SQLException {
+	
+	public static ResultSet executeQuery(String query,QueryType type, Object... args) throws SQLException {
 		Connection database = getMySQLConnection();
-
+		ResultSet result = null;
 		if (database == null) {
 			return null;
 		}
@@ -46,7 +46,16 @@ public class DBMapper {
 			for (int i = 0; i < args.length; i++) 
 				stat.setObject(i+1, args[i]);
 
-			return stat.executeQuery();
+			switch (type) {
+			case SELECT:
+				result = stat.executeQuery();
+				break;
+			default:
+				stat.executeUpdate();
+				break;
+			}
+			
+			return result;
 
 		} catch (SQLException e) {
 			throw e;
@@ -80,5 +89,8 @@ public class DBMapper {
 		}
 	}
 
+	public enum QueryType {
+		SELECT, UPDATE, DELETE, INSERT;
+	}
 }
 
