@@ -11,16 +11,19 @@ import services.ServicesTools;
 import services.errors.ServerErrors;
 
 public class AuthenticationUtils {
+	private final static String CHECK_LOGIN_QUERY = "Select login from users where login = ?;";
+	private final static String CHECK_LOGIN_AND_PASSWORD_QUERY = "Select login from users where login = ? and password = SHA2(?, 256);";
+	
 	
 	public static boolean checkLogin(String login) throws SQLException {
-		ResultSet result = DBMapper.executeQuery("Select login from users where login = ?;", QueryType.SELECT, login);
+		ResultSet result = DBMapper.executeQuery(CHECK_LOGIN_QUERY, QueryType.SELECT, login);
 		boolean found = result.next();
 		result.close();
 		return found;
 	}
 	
 	public static boolean checkLoginAndPassword(String login, String password) throws SQLException {
-		ResultSet result = DBMapper.executeQuery("Select login from users where login = ? and password = SHA2(?, 256);", QueryType.SELECT, login, password);
+		ResultSet result = DBMapper.executeQuery(CHECK_LOGIN_AND_PASSWORD_QUERY, QueryType.SELECT, login, password);
 		boolean found = result.next();
 		result.close();
 		return found;
