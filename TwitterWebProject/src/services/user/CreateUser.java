@@ -11,10 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
 
 public class CreateUser extends HttpServlet {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3138477533724703698L;
+
 	public final static String PARAM_LOGIN = "login";
 	public final static String PARAM_PASSWORD = "password";
 	public final static String PARAM_EMAIL = "email";

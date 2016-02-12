@@ -10,6 +10,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import database.DBMapper.QueryType;
+import database.exceptions.CannotConnectToDatabaseException;
+import database.exceptions.QueryFailedException;
+import utils.Debug;
+
 
 /**
  * @author alexandre
@@ -23,7 +28,8 @@ public class DBMapper {
 	private final static String LOGIN = "gr3_dupas_gaspar";
 	private final static String PASSWORD = "7XRMfn";
 
-	private final static String DATE_PATTERN = "HH:mm:ss dd/MM/YY";
+	//private final static String DATE_PATTERN = "HH:mm:ss dd/MM/YY"; //postgres
+	private final static String DATE_PATTERN = "YYYY-MM-dd HH:mm:ss"; //mysql
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 
 
@@ -31,18 +37,24 @@ public class DBMapper {
 
 		return DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE,	LOGIN, PASSWORD);
 	}
-	
-	
-	public static ResultSet executeQuery(String query,QueryType type, Object... args) throws SQLException {
-		Connection database = getMySQLConnection();
+
+
+	public static ResultSet executeQuery(String query,QueryType type, Object... args) 
+			throws CannotConnectToDatabaseException, QueryFailedException {
+
+		Connection database;
 		ResultSet result = null;
-		if (database == null) {
-			return null;
+
+
+		try {
+			database = getMySQLConnection();
+		} catch (SQLException e1) {
+			throw new CannotConnectToDatabaseException();
 		}
 
 		try {
 			PreparedStatement stat = database.prepareStatement(query);
-
+			//Fill args
 			for (int i = 0; i < args.length; i++) 
 				stat.setObject(i+1, args[i]);
 
@@ -50,18 +62,20 @@ public class DBMapper {
 			case SELECT:
 				result = stat.executeQuery();
 				break;
-			default:
+			default: //The Select is the only action that returns a resultSet.
 				stat.executeUpdate();
 				break;
 			}
-			
+
 			return result;
 
 		} catch (SQLException e) {
-			throw e;
+			Debug.display_stack(e);
+			throw new QueryFailedException();
 		}
 
 	}
+
 
 	/**
 	 * Return current time. This method is in DBMapper to be sure it's use with database interactions. 
@@ -92,5 +106,9 @@ public class DBMapper {
 	public enum QueryType {
 		SELECT, UPDATE, DELETE, INSERT;
 	}
+
+
+
+
 }
 

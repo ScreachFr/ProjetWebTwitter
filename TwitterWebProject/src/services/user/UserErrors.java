@@ -4,7 +4,7 @@ import services.errors.GenericError;
 import services.errors.ServletError;
 
 public enum UserErrors implements ServletError {
-	LOGIN_ALREADY_EXIST(new GenericError(1, "Login already exist"));
+	LOGIN_OR_EMAIL_ALREADY_EXIST(new GenericError(1, "Login or email already exist"));
 
 	private GenericError error;
 	
