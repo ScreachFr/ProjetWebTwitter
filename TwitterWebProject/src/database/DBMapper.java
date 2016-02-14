@@ -1,6 +1,7 @@
 package database;
 
 
+import java.awt.DisplayMode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -29,8 +30,10 @@ public class DBMapper {
 	private final static String PASSWORD = "7XRMfn";
 
 	//private final static String DATE_PATTERN = "HH:mm:ss dd/MM/YY"; //postgres
-	private final static String DATE_PATTERN = "YYYY-MM-dd HH:mm:ss"; //mysql
-	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
+	public final static String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss"; //mysql
+	public final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
+	
+	
 
 
 	public static Connection getMySQLConnection() throws SQLException {
@@ -81,7 +84,7 @@ public class DBMapper {
 	 * Return current time. This method is in DBMapper to be sure it's use with database interactions. 
 	 * The used pattern is "HH:mm:ss dd/MM/YY".
 	 */
-	public static String getTime() {
+	public static String getTimeNow() {
 
 		return DATE_FORMAT.format(new Date(System.currentTimeMillis()));
 	}

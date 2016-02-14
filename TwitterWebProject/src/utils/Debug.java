@@ -27,6 +27,17 @@ public class Debug {
 		}
 	}
 	
+	/**
+	 * Display a varible's value (name + " = " + var).
+	 * @param var
+	 * 	Variable to display.
+	 * @param name
+	 * 	Display name.
+	 */
+	public static void display_var(Object var, String name) {
+		display_notice(name + " = " + var);
+	}
+	
 }
 
 

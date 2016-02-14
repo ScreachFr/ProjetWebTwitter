@@ -2,6 +2,12 @@ package services.auth;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -14,24 +20,41 @@ import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 import services.ServicesTools;
 import services.errors.ServerErrors;
+import utils.Debug;
 
 public class AuthenticationUtils {
-	private static Object lock = new Object();
+	private static Object lock = new Object(); //Key creation lock
 	
+	
+	//Database queries
 	//SELECT
 	private final static String CHECK_LOGIN_AND_PASSWORD_QUERY 	= "SELECT login FROM users WHERE login = ? and password = SHA2(?, 256);";
 	private final static String GET_USER_ID_QUERY 				= "SELECT iduser FROM users WHERE login = ?;";
 	private final static String GET_KEY_QUERY 					= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
 	private final static String GET_KEY_FROM_USER_ID_QUERY 		= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `iduser` = ?;";
+	private final static String GET_KEY_VALIDITY_TIME_QUERY		= "SELECT validity FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
 	//INSERT
 	private final static String ADD_SESSION_QUERY 				= "INSERT INTO `gr3_dupas_gaspar`.`sessions` (`key`, `iduser`, `validity`, `admin`) VALUES (?, ?, ?, ?);";
 	//DELETE
 	private final static String REMOVE_KEY_BY_USER_ID_QUERY 	= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `iduser` = ?;";
+	private final static String REMOVE_KEY_BY_KEY_QUERY 		= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
+	//UPDATE
+	private final static String UPDATE_KEY_VALIDITY_QUERY		= "UPDATE `gr3_dupas_gaspar`.`sessions` SET `validity` = ? WHERE `iduser` = ?;";
 	//COLUMN NAME
-	private final static String USER_ID_USERS = "iduser";
-	private final static String KEY_SESSIONS = "key";
+	private final static String USER_ID_USERS 					= "iduser";
+	private final static String KEY_SESSIONS 					= "key";
+	private final static String VALIDITY_SESSIONS 				= "validity";
 
+	//Key validity duration
+	private final static int KEY_VALIDITY_DURATION_HOUR 		= 1;
+	private final static int KEY_VALIDITY_DURATION_MINUTE 		= 0;
+	private final static int KEY_VALIDITY_DURATION_SECONDE 		= 0;
 
+	//Date manipulation
+	private final static String DATE_PATTERN = "HH:mm:ss";
+	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
+	private final static boolean KEY_VALIDITY_METHOD = true;
+	
 	/**
 	 * Check if login and password match.
 	 * @param login
@@ -52,9 +75,60 @@ public class AuthenticationUtils {
 		return found;
 	}
 
-	//TODO
-	public static boolean isKeyValid(String key) {
-		return true;
+	/**
+	 * Check a key validity.
+	 * @param key
+	 * 	Key to check.
+	 * @param method
+	 * 	Testing method.
+	 * 		True : now + validityDuration > duration
+	 * 		False : validity < now 
+	 * @return
+	 * 	True : the key is valid, False = the key is not valid.
+	 * @throws CannotConnectToDatabaseException
+	 * @throws QueryFailedException
+	 * @throws SQLException
+	 * XXX TEST : partial, the second validation checking method has not been tested.
+	 */
+	public static boolean isKeyValid(String key, boolean method) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
+		Date validity = null;
+		Date duration = null;
+		boolean result = false;
+		
+		//Getting validity value in database.
+		ResultSet queryResult = DBMapper.executeQuery(GET_KEY_VALIDITY_TIME_QUERY, QueryType.SELECT, key);
+		if (queryResult.next()) {
+			validity = DBMapper.parseDate(queryResult.getString(VALIDITY_SESSIONS));
+			queryResult.close();
+		} else {
+			queryResult.close();
+			return false;
+		}
+		
+		//Validity checking methods
+		if (method) {
+			try {
+				duration  = DATE_FORMAT.parse(KEY_VALIDITY_DURATION_HOUR
+						+ ":" + KEY_VALIDITY_DURATION_MINUTE + ":" + KEY_VALIDITY_DURATION_SECONDE);
+			} catch (ParseException e) {
+				//Can't happens if no one modify any constant.
+				e.printStackTrace();
+			}
+			
+			
+			duration = new Date(System.currentTimeMillis() + duration.getTime());
+			
+			result = validity.compareTo(duration) <= 0;
+		} else {
+			result =  validity.before(new Date(System.currentTimeMillis()));
+		}
+		
+		if(!result) {
+			DBMapper.executeQuery(REMOVE_KEY_BY_KEY_QUERY, QueryType.DELETE, key);
+		}
+		
+		return result;
+		
 	}
 
 	/**
@@ -74,8 +148,11 @@ public class AuthenticationUtils {
 		String key = null;
 		
 		if(found) {
-			if (isKeyValid(result.getString(KEY_SESSIONS)))
+			if (isKeyValid(result.getString(KEY_SESSIONS), KEY_VALIDITY_METHOD)) {
+				DBMapper.executeQuery(UPDATE_KEY_VALIDITY_QUERY, QueryType.UPDATE, DBMapper.getTimeNow(), userID);
 				key = result.getString(KEY_SESSIONS);
+				Debug.display_notice("Validity update success.");
+			}
 		}
 		
 		result.close();
@@ -99,7 +176,7 @@ public class AuthenticationUtils {
 		
 		//Will return the user's key if he's already connected.
 		key = getKeyFromUserId(userId);
-		if (key != null)
+		if (key != null) 
 			return key;
 		
 		//Must be synchronized to avoid key duplication.
@@ -107,7 +184,7 @@ public class AuthenticationUtils {
 			do {
 				key = UUID.randomUUID().toString().replace("-", "");
 			} while(isDBContainsKey(key));
-			validity = DBMapper.getTime();
+			validity = DBMapper.getTimeNow();
 			
 			DBMapper.executeQuery(ADD_SESSION_QUERY, QueryType.INSERT, key, userId, validity, 0);
 		}
@@ -194,7 +271,7 @@ public class AuthenticationUtils {
 	 * 	User's password.
 	 * @return
 	 * 	Authentication key in JSON if it works.
-	 * XXX TEST : ok
+	 * XXX TEST : partial, need to update key validity when user already connected.
 	 */
 	public static JSONObject login (String login, String password) {
 		if (ServicesTools.nullChecker(login, password))
@@ -252,7 +329,16 @@ public class AuthenticationUtils {
 
 	public static void main(String[] args) {
 //		System.out.println(UserUtils.createUser("debug", "password", "mail").toJSONString());
-//		System.out.println(login("debug", "password").toJSONString());//3235afb707a9471c8e6fc1e6097143c1
+		System.out.println(login("debug", "password").toJSONString());
+//		String key = "3fc636a14a574f24aeadce8c30d31942";
+//		
+//		try {
+//			System.out.println(isKeyValid(key, KEY_VALIDITY_METHOD));
+//		} catch (CannotConnectToDatabaseException | QueryFailedException | SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 //		System.out.println(logout("debug"));
 	}
 
