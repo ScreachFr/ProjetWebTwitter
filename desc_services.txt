@@ -1,0 +1,80 @@
+Description des services
+
+	Nom du web service
+		CreateUser
+	URL du web service
+		/user/create
+	Description du service
+		Créé un nouvel utilisateur
+	Paramètres en entrée
+		login, password, mail
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{“success” : true} 
+		{"errorCode" : 1, "errorMessage" : "Login or email already exist"}
+	Erreurs possible
+		1 Login or email already exist
+	Avancement du service
+		Terminé
+		TEST : partiels	
+	Classes JAVA en rapport avec le web service
+		service.user.*
+	Information additionnelles	
+		none
+		
+	Nom du web service
+		Login
+	URL du web service
+		/user/login
+	Description du service
+		Permet l'obtention d'une clef (key) d'authentification temporaire.
+	Paramètres en entrée
+		login, password
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"key":"3fc636a14a574f24aeadce8c30d31942"}
+		{"errorCode" : 1, "errorMessage" : "Bad login or password"}
+	Erreurs possible
+		1 Bad login or password
+	Avancement du service
+		Terminé
+		TEST : partiels
+	Classes JAVA en rapport avec le web service
+		services.auth.* except Logout 
+	Information additionnelles
+		none
+
+	Nom du web service
+		Logout
+	URL du web service
+		/user/logout
+	Description du service
+		Permet de supprimer une clef d'authentification de la base de données.
+	Paramètres en entrée
+		login
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"success" : true}
+	Erreurs possible
+		none
+	Avancement du service
+		Terminé
+		TEST : partiels
+	Classes JAVA en rapport avec le web service
+		services.auth.* except Logint 
+	Information additionnelles
+		none
+
+
+
+
+
+
+
+
+
+
+
