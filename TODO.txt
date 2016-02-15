@@ -1,3 +1,6 @@
 TODO list :
 
--Make the server check if the email is duplacated in database.
+DONE-Make the server check if the email is duplacated in database.
+-Test classes.
+-Make more classes private.
+-Update database with new tables(friends for example).
