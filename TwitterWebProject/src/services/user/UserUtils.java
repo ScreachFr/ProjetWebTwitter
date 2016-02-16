@@ -14,7 +14,7 @@ import services.ServicesTools;
 import services.errors.ServerErrors;
 
 public class UserUtils {
-	private final static String INSERT_USER_QUERY = "INSERT INTO users (iduser, login, password, email) VALUES (DEFAULT, ?, SHA2(?, 256), ?);";
+	private final static String INSERT_USER_QUERY = "INSERT INTO users (idusers, login, password, email) VALUES (DEFAULT, ?, SHA2(?, 256), ?);";
 	private final static String CHECK_LOGIN_QUERY = "SELECT login FROM users WHERE login = ? OR email = ?;";
 
 	/**

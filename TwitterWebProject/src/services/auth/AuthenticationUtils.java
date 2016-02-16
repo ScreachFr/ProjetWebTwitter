@@ -20,6 +20,7 @@ import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 import services.ServicesTools;
 import services.errors.ServerErrors;
+import services.user.UserUtils;
 import utils.Debug;
 
 public class AuthenticationUtils {
@@ -29,21 +30,21 @@ public class AuthenticationUtils {
 	//Database queries
 	//SELECT
 	private final static String CHECK_LOGIN_AND_PASSWORD_QUERY 	= "SELECT login FROM users WHERE login = ? and password = SHA2(?, 256);";
-	private final static String GET_USER_ID_QUERY 				= "SELECT iduser FROM users WHERE login = ?;";
+	private final static String GET_USER_ID_QUERY 				= "SELECT idusers FROM users WHERE login = ?;";
 	private final static String GET_KEY_QUERY 					= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
-	private final static String GET_KEY_FROM_USER_ID_QUERY 		= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `iduser` = ?;";
-	private final static String GET_KEY_VALIDITY_TIME_QUERY		= "SELECT validity FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
+	private final static String GET_KEY_FROM_USER_ID_QUERY 		= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `user_id` = ?;";
+	private final static String GET_KEY_VALIDITY_TIME_QUERY		= "SELECT expiration FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
 	//INSERT
-	private final static String ADD_SESSION_QUERY 				= "INSERT INTO `gr3_dupas_gaspar`.`sessions` (`key`, `iduser`, `validity`, `admin`) VALUES (?, ?, ?, ?);";
+	private final static String ADD_SESSION_QUERY 				= "INSERT INTO `gr3_dupas_gaspar`.`sessions` (`key`, `user_id`, `expiration`, `root`) VALUES (?, ?, ?, ?);";
 	//DELETE
-	private final static String REMOVE_KEY_BY_USER_ID_QUERY 	= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `iduser` = ?;";
+	private final static String REMOVE_KEY_BY_USER_ID_QUERY 	= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `user_id` = ?;";
 	private final static String REMOVE_KEY_BY_KEY_QUERY 		= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
 	//UPDATE
-	private final static String UPDATE_KEY_VALIDITY_QUERY		= "UPDATE `gr3_dupas_gaspar`.`sessions` SET `validity` = ? WHERE `iduser` = ?;";
+	private final static String UPDATE_KEY_VALIDITY_QUERY		= "UPDATE `gr3_dupas_gaspar`.`sessions` SET `expiration` = ? WHERE `user_id` = ?;";
 	//COLUMN NAME
-	private final static String USER_ID_USERS 					= "iduser";
+	private final static String USER_ID_USERS 					= "idusers";
 	private final static String KEY_SESSIONS 					= "key";
-	private final static String VALIDITY_SESSIONS 				= "validity";
+	private final static String VALIDITY_SESSIONS 				= "expiration";
 
 	//Key validity duration
 	private final static int KEY_VALIDITY_DURATION_HOUR 		= 1;
@@ -329,8 +330,9 @@ public class AuthenticationUtils {
 
 	public static void main(String[] args) {
 //		System.out.println(UserUtils.createUser("debug", "password", "mail").toJSONString());
-		System.out.println(login("debug", "password").toJSONString());
-//		String key = "3fc636a14a574f24aeadce8c30d31942";
+		
+//		System.out.println(login("debug", "password").toJSONString());
+//		String key = "a7f96717f3484504ba76c2904a9f9c5f";
 //		
 //		try {
 //			System.out.println(isKeyValid(key, KEY_VALIDITY_METHOD));
@@ -338,7 +340,7 @@ public class AuthenticationUtils {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		
+//		
 //		System.out.println(logout("debug"));
 	}
 
