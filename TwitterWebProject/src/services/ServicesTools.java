@@ -15,6 +15,7 @@ public class ServicesTools {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	public static JSONObject createJSONError(ServletError error) {
 		JSONObject json = new JSONObject();
 		json.put("errorCode", error.getCode());
