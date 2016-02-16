@@ -43,7 +43,7 @@ DROP TABLE IF EXISTS `gr3_dupas_gaspar`.`sessions` ;
 CREATE TABLE IF NOT EXISTS `gr3_dupas_gaspar`.`sessions` (
   `key` CHAR(32) NOT NULL,
   `user_id` INT NOT NULL,
-  `expiration` TIMESTAMP(32) NULL,
+  `expiration` TIMESTAMP NULL,
   `root` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`key`, `user_id`),
   INDEX `session_index` (`key` ASC, `user_id` ASC, `expiration` ASC),
@@ -64,7 +64,7 @@ DROP TABLE IF EXISTS `gr3_dupas_gaspar`.`friends` ;
 CREATE TABLE IF NOT EXISTS `gr3_dupas_gaspar`.`friends` (
   `user1` INT NOT NULL,
   `user2` INT NOT NULL,
-  `date` TIMESTAMP(32) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`user1`, `user2`),
   INDEX `fk_friends_users2_idx` (`user2` ASC),
   CONSTRAINT `fk_friends_users1`
