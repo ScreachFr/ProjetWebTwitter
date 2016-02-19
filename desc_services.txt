@@ -68,8 +68,40 @@ Description des services
 	Information additionnelles
 		none
 
-
-
+	Nom du web service
+		AddFriend
+	URL du web service
+		/friends/add
+	Description du service
+		Permet d'ajouter un amis
+	Paramètres en entrée
+		key : clef d'authentification.
+		iduser : iduser de la personne à ajouter en amis.
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"success" : true}
+		{"errorCode" : "1", "errorMessage" : "Unknown user"}
+	Erreurs possible
+		1 Unknown user
+		2 User already in friend list
+	Avancement du service
+		0%
+	Classes JAVA en rapport avec le web service
+	Information additionnelles
+		none
+	
+	Nom du web service
+	URL du web service
+	Description du service
+	Paramètres en entrée
+	Format de sortie
+	Exemple de sortie
+	Erreurs possible
+	Avancement du service
+	Classes JAVA en rapport avec le web service
+	Information additionnelles
+	
 
 
 
