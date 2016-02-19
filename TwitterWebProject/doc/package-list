@@ -1,7 +1,0 @@
-database
-database.exceptions
-services
-services.auth
-services.errors
-services.user
-utils

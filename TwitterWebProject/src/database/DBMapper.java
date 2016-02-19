@@ -88,7 +88,7 @@ public class DBMapper {
 	}
 
 	/**
-	 * Parse a string to a date. Caution : this method is made to parse date from data base who follow the "HH:mm:ss dd/MM/YY" pattern.
+	 * Parse a string to a date. Caution : this method has been made to parse date from data base who follow the "yyyy-MM-dd HH:mm:ss" pattern.
 	 * @param s
 	 * 	String to parse.
 	 * @return
