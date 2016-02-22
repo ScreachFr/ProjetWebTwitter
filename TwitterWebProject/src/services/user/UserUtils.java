@@ -16,6 +16,8 @@ import services.errors.ServerErrors;
 public class UserUtils {
 	private final static String INSERT_USER_QUERY = "INSERT INTO users (idusers, login, password, email) VALUES (DEFAULT, ?, SHA2(?, 256), ?);";
 	private final static String CHECK_LOGIN_QUERY = "SELECT login FROM users WHERE login = ? OR email = ?;";
+	private final static String IS_ID_IN_DB_QUERY = "SELECT * FROM users WHERE idusers = ?;";
+	
 
 	/**
 	 * Create an user.
@@ -38,7 +40,7 @@ public class UserUtils {
 					return ServicesTools.createJSONError(UserErrors.LOGIN_OR_EMAIL_ALREADY_EXIST);
 				} else
 					UserUtils.addUser(login, password, email);
-				return getCreateUserResponse(); 
+				return ServicesTools.generatePositiveAnswer(); 
 			}  catch (SQLException e) {
 				return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
 			} catch (CannotConnectToDatabaseException e) {
@@ -89,16 +91,35 @@ public class UserUtils {
 		return found;
 	}
 	
+	
 	/**
-	 * Return a positive response.
+	 * Check if a user id is in the database.
+	 * @param userId
+	 * 	Id to check.
+	 * @return
+	 * 	True = the id is in db. False = the id is not in db.
+	 * @throws CannotConnectToDatabaseException
+	 * @throws QueryFailedException
+	 * @throws SQLException
+	 * XXX TEST : ok
 	 */
-	@SuppressWarnings("unchecked")
-	public static JSONObject getCreateUserResponse() {
-		JSONObject ret = new JSONObject();
-
-		ret.put("success", true);
-
-		return ret;
+	public static boolean isUserInDB(int userId) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
+		ResultSet result = DBMapper.executeQuery(IS_ID_IN_DB_QUERY, QueryType.SELECT, userId);
+		boolean found = result.next();
+		result.close();
+		
+		return found;
+		
+		
+	}
+	
+	public static void main(String[] args) {
+		try {
+			System.out.println(isUserInDB(-1));
+		} catch (CannotConnectToDatabaseException | QueryFailedException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

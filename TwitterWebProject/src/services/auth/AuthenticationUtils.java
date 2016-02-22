@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,6 +31,7 @@ public class AuthenticationUtils {
 	private final static String GET_KEY_QUERY 					= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
 	private final static String GET_KEY_FROM_USER_ID_QUERY 		= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `user_id` = ?;";
 	private final static String GET_KEY_VALIDITY_TIME_QUERY		= "SELECT expiration FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
+	private final static String GET_USER_ID_BY_KEY_QUERY		= "SELECT user_id FROM gr3_dupas_gaspar.sessions WHERE `key` = ?;";
 	//INSERT
 	private final static String ADD_SESSION_QUERY 				= "INSERT INTO `gr3_dupas_gaspar`.`sessions` (`key`, `user_id`, `expiration`, `root`) VALUES (?, ?, ?, ?);";
 	//DELETE
@@ -40,17 +42,18 @@ public class AuthenticationUtils {
 	//COLUMN NAME
 	private final static String USER_ID_USERS 					= "idusers";
 	private final static String KEY_SESSIONS 					= "key";
+	private final static String USER_ID_SESSIONS				= "user_id";
 	private final static String VALIDITY_SESSIONS 				= "expiration";
 
 	//Key validity duration
 	private final static int KEY_VALIDITY_DURATION_HOUR 		= 1;
 	private final static int KEY_VALIDITY_DURATION_MINUTE 		= 0;
-	private final static int KEY_VALIDITY_DURATION_SECONDE 		= 0;
+	private final static int KEY_VALIDITY_DURATION_SECOND 		= 0;
 
 	//Date manipulation
 	private final static String DATE_PATTERN = "HH:mm:ss";
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
-	private final static boolean KEY_VALIDITY_METHOD = true;
+	public final static boolean KEY_VALIDITY_METHOD = true;
 	
 	/**
 	 * Check if login and password match.
@@ -89,7 +92,6 @@ public class AuthenticationUtils {
 	 */
 	public static boolean isKeyValid(String key, boolean method) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
 		Date validity = null;
-		Date duration = null;
 		boolean result = false;
 		
 		//Getting validity value in database.
@@ -102,20 +104,17 @@ public class AuthenticationUtils {
 			return false;
 		}
 		
+		
 		//Validity checking methods
 		if (method) {
-			try {
-				duration  = DATE_FORMAT.parse(KEY_VALIDITY_DURATION_HOUR
-						+ ":" + KEY_VALIDITY_DURATION_MINUTE + ":" + KEY_VALIDITY_DURATION_SECONDE);
-			} catch (ParseException e) {
-				//Can't happens if no one modify any constant.
-				e.printStackTrace();
-			}
+			Calendar duration = Calendar.getInstance();
 			
+			duration.set(Calendar.HOUR, duration.get(Calendar.HOUR) + KEY_VALIDITY_DURATION_HOUR);
+			duration.set(Calendar.MINUTE, duration.get(Calendar.MINUTE) + KEY_VALIDITY_DURATION_MINUTE);
+			duration.set(Calendar.SECOND, duration.get(Calendar.SECOND) + KEY_VALIDITY_DURATION_SECOND);
 			
-			duration = new Date(System.currentTimeMillis() + duration.getTime());
-			
-			result = validity.compareTo(duration) <= 0;
+                                                                                                   			
+			result = new Date(System.currentTimeMillis()).before(duration.getTime());
 		} else {
 			result =  validity.before(new Date(System.currentTimeMillis()));
 		}
@@ -126,6 +125,29 @@ public class AuthenticationUtils {
 		
 		return result;
 		
+	}
+	
+	/**
+	 * Return the key owner's userId.
+	 * @param key
+	 * 	Key to use.
+	 * @return
+	 * 	UserId of the key owner. The method will return -1 if the key isn't valid.
+	 * @throws CannotConnectToDatabaseException
+	 * @throws QueryFailedException
+	 * @throws SQLException
+	 * XXX TEST ok
+	 */
+	public static int getUserIdByKey(String key) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
+		if (isKeyValid(key, KEY_VALIDITY_METHOD)) {
+			ResultSet qResult;
+			qResult = DBMapper.executeQuery(GET_USER_ID_BY_KEY_QUERY, QueryType.SELECT, key);
+			qResult.next();
+
+			return qResult.getInt(USER_ID_SESSIONS); 
+		} else {
+			return -1;
+		}
 	}
 
 	/**
@@ -326,16 +348,18 @@ public class AuthenticationUtils {
 
 	public static void main(String[] args) {
 //		System.out.println(UserUtils.createUser("debug", "password", "mail").toJSONString());
-		
-//		System.out.println(login("debug", "password").toJSONString());
-//		String key = "a7f96717f3484504ba76c2904a9f9c5f";
 //		
-//		try {
+//		System.out.println(login("debug", "password").toJSONString());
+		String key = "672953b7552449bea509ea7889226585";
+		
+		try {
 //			System.out.println(isKeyValid(key, KEY_VALIDITY_METHOD));
-//		} catch (CannotConnectToDatabaseException | QueryFailedException | SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+//			System.out.println(isDBContainsKey(key));
+			System.out.println(getUserIdByKey(key));
+		} catch (CannotConnectToDatabaseException | QueryFailedException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		
 //		System.out.println(logout("debug"));
 	}

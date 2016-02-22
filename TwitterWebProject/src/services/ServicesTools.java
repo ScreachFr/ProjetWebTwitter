@@ -24,4 +24,13 @@ public class ServicesTools {
 		return json;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static JSONObject generatePositiveAnswer() {
+		JSONObject ret = new JSONObject();
+
+		ret.put("success", true);
+
+		return ret;
+	}
+	
 }
