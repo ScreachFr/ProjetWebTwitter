@@ -1,4 +1,4 @@
-package services.follower;
+package services.followers;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -74,13 +74,13 @@ public class FollowerUtils {
 	 * Unfollow an user.
 	 * @param userKey
 	 * 	User who request the unfollow.
-	 * @param idToFollow
+	 * @param idToUnfollow
 	 * 	Id to unfollow.
 	 * @return
 	 * 	JSON answer.
 	 * XXX TEST : ok
 	 */
-	public static JSONObject unfollow(String userKey, int idToFollow) {
+	public static JSONObject unfollow(String userKey, int idToUnfollow) {
 		//Check key validity
 		try {
 			if(!AuthenticationUtils.isKeyValid(userKey, AuthenticationUtils.KEY_VALIDITY_METHOD)) {
@@ -91,14 +91,14 @@ public class FollowerUtils {
 			//Extra precaution
 			if(userId < 0) 
 				return ServicesTools.createJSONError(ServerErrors.INVALID_KEY);
-			else if (userId == idToFollow)
+			else if (userId == idToUnfollow)
 				return ServicesTools.createJSONError(FollowerErrors.SAME_USER_ID);
-			else if (!UserUtils.isUserInDB(idToFollow))
+			else if (!UserUtils.isUserInDB(idToUnfollow))
 				return ServicesTools.createJSONError(FollowerErrors.UNKNOWN_USER);
-			else if (!isUserFollowing(userId, idToFollow))
+			else if (!isUserFollowing(userId, idToUnfollow))
 				return ServicesTools.generatePositiveAnswer();
 			
-			DBMapper.executeQuery(REMOVE_FOLLOW_QUERY, QueryType.DELETE, userId, idToFollow);
+			DBMapper.executeQuery(REMOVE_FOLLOW_QUERY, QueryType.DELETE, userId, idToUnfollow);
 
 			
 			return ServicesTools.generatePositiveAnswer();

@@ -10,6 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
+import services.ServicesTools;
+import services.errors.ServerErrors;
+import services.followers.FollowerUtils;
+
 
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 6278003606476939922L;
@@ -28,7 +32,13 @@ public class Login extends HttpServlet {
 		password = req.getParameter(PARAM_PASSWORD);
 		
 		
-		answer = AuthenticationUtils.login(login, password);
+		if(!ServicesTools.nullChecker(login, password)) {
+			answer = AuthenticationUtils.login(login, password);
+		} else {
+			answer = ServicesTools.createJSONError(ServerErrors.MISSING_ARGUMENT);
+		}
+		
+		
 		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());

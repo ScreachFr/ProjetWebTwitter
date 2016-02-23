@@ -1,4 +1,4 @@
-package services.follower;
+package services.followers;
 
 import services.errors.GenericError;
 import services.errors.ServletError;

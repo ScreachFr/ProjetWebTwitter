@@ -3,22 +3,92 @@
 <web-app> 
 	<display-name>TwitterProject_Dupas_Gaspard--Cilia</display-name> 
 	
+	<!-- Name binding -->
+		<!-- Authentication -->
+			<servlet> 
+				<servlet-name>Login</servlet-name> 
+				<servlet-class>services.auth.Login</servlet-class> 
+			</servlet>
+			<servlet> 
+				<servlet-name>Logout</servlet-name> 
+				<servlet-class>services.auth.Logout</servlet-class> 
+			</servlet>
+		
+		<!-- User creation -->
+			<servlet> 
+				<servlet-name>CreateUser</servlet-name> 
+				<servlet-class>services.user.CreateUser</servlet-class> 
+			</servlet>
+			
+		<!-- Follow related -->
+			<servlet> 
+				<servlet-name>Follow</servlet-name> 
+				<servlet-class>services.followers.Follow</servlet-class> 
+			</servlet>
+			<servlet> 
+				<servlet-name>Unfollow</servlet-name> 
+				<servlet-class>services.followers.Unfollow</servlet-class> 
+			</servlet>
+			<servlet> 
+				<servlet-name>GetFollows</servlet-name> 
+				<servlet-class>services.followers.GetFollows</servlet-class> 
+			</servlet>
+			<servlet> 
+				<servlet-name>GetFollowers</servlet-name> 
+				<servlet-class>services.followers.GetFollowers</servlet-class> 
+			</servlet>
+	
+	<!-- Template
+	
 	<servlet> 
-		<servlet-name>Login</servlet-name> 
-		<servlet-class>services.auth.Login</servlet-class> 
-	</servlet>
-	<servlet> 
-		<servlet-name>Logout</servlet-name> 
-		<servlet-class>services.auth.Logout</servlet-class> 
+		<servlet-name>NAME</servlet-name> 
+		<servlet-class>CLASS</servlet-class> 
 	</servlet>
 	
+	 -->
+	
+	
+	
+	<!-- URL Mapping -->
+		<!-- Authentication -->
+			<servlet-mapping> 
+				<servlet-name>Logout</servlet-name> 
+				<url-pattern>/user/logout</url-pattern> 
+			</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>Login</servlet-name> 
+				<url-pattern>/user/login</url-pattern> 
+			</servlet-mapping>
+	
+		<!-- User creation -->
+		<servlet-mapping> 
+			<servlet-name>CreateUser</servlet-name> 
+			<url-pattern>/user/create</url-pattern> 
+		</servlet-mapping>
+	
+		<!-- Follow related -->
+		<servlet-mapping> 
+			<servlet-name>Follow</servlet-name> 
+			<url-pattern>/follow/add</url-pattern> 
+		</servlet-mapping>
+		<servlet-mapping> 
+			<servlet-name>Unfollow</servlet-name> 
+			<url-pattern>/follow/remove</url-pattern> 
+		</servlet-mapping>
+		<servlet-mapping> 
+			<servlet-name>GetFollows</servlet-name> 
+			<url-pattern>/follow/getfollows</url-pattern> 
+		</servlet-mapping>
+		<servlet-mapping> 
+			<servlet-name>GetFollowers</servlet-name> 
+			<url-pattern>/follow/getfollows</url-pattern> 
+		</servlet-mapping>
+	
+	<!-- Template
 	<servlet-mapping> 
-		<servlet-name>Logout</servlet-name> 
-		<url-pattern>/user/logout</url-pattern> 
+		<servlet-name>NAME</servlet-name> 
+		<url-pattern>URL</url-pattern> 
 	</servlet-mapping>
-	<servlet-mapping> 
-		<servlet-name>Login</servlet-name> 
-		<url-pattern>/user/login</url-pattern> 
-	</servlet-mapping>
+	 -->
 	
 </web-app>

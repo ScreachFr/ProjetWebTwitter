@@ -1,4 +1,4 @@
-package services.auth;
+package services.followers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,30 +12,31 @@ import org.json.simple.JSONObject;
 
 import services.ServicesTools;
 import services.errors.ServerErrors;
-import services.followers.FollowerUtils;
 
-public class Logout extends HttpServlet {
-	private static final long serialVersionUID = 1819978909505748438L;
+public class GetFollowers extends HttpServlet{
+
+private static final long serialVersionUID = 7428447883130442228L;
 	
-	public final static String PARAM_LOGIN = "login";
+	
 	
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		JSONObject answer;
-		String login;
 		
-		login = req.getParameter(PARAM_LOGIN);
+		Integer userId = null; 
 		
-		if(!ServicesTools.nullChecker(PARAM_LOGIN)) {
-			answer = AuthenticationUtils.logout(login);
+		userId = Integer.parseInt(req.getParameter(ServicesTools.USER_ID_ARG));
+		
+		if(!ServicesTools.nullChecker(userId)) {
+			answer = FollowerUtils.getUsersFollowers(userId);
 		} else {
 			answer = ServicesTools.createJSONError(ServerErrors.MISSING_ARGUMENT);
 		}
 		
+		
+		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());
 		resp.setContentType("text/plain");
-		
 	}
 }
