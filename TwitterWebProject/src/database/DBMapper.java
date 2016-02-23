@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
 import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 import utils.Debug;
@@ -21,11 +22,7 @@ import utils.Debug;
  * Database connection.
  */
 public class DBMapper {
-	private final static String HOST = "132.227.201.129";
-	private final static String PORT = "33306";
-	private final static String DATABASE = "gr3_dupas_gaspar";
-	private final static String LOGIN = "gr3_dupas_gaspar";
-	private final static String PASSWORD = "7XRMfn";
+	
 
 	//private final static String DATE_PATTERN = "HH:mm:ss dd/MM/YY"; //postgres
 	public final static String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss"; //mysql
@@ -35,8 +32,10 @@ public class DBMapper {
 
 
 	public static Connection getMySQLConnection() throws SQLException {
-
-		return DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE,	LOGIN, PASSWORD);
+		
+		
+		return DriverManager.getConnection("jdbc:mysql://" + DBSettings.HOST + ":" + DBSettings.PORT + "/" + DBSettings.DATABASE,
+				DBSettings.LOGIN, DBSettings.PASSWORD);
 	}
 
 
