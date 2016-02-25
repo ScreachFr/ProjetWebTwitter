@@ -14,9 +14,14 @@ import services.ServicesTools;
 import services.errors.ServerErrors;
 
 public class UserUtils {
-	private final static String INSERT_USER_QUERY = "INSERT INTO users (idusers, login, password, email) VALUES (DEFAULT, ?, SHA2(?, 256), ?);";
-	private final static String CHECK_LOGIN_QUERY = "SELECT login FROM users WHERE login = ? OR email = ?;";
-	private final static String IS_ID_IN_DB_QUERY = "SELECT * FROM users WHERE idusers = ?;";
+	private final static String INSERT_USER_QUERY 				= "INSERT INTO users (idusers, login, password, email) VALUES (DEFAULT, ?, SHA2(?, 256), ?);";
+	private final static String CHECK_LOGIN_QUERY 				= "SELECT login FROM users WHERE login = ? OR email = ?;";
+	private final static String GET_USER_INFO_BY_ID_QUERY 		= "SELECT * FROM users WHERE idusers = ?;";
+	
+	private final static String LOGIN_ATTR_NAME = "login";
+	private final static String EMAIL_ATTR_NAME = "email";
+	private final static String FIRSTNAME_ATTR_NAME = "prenom";
+	private final static String LASTNAME_ATTR_NAME = "nom";
 	
 
 	/**
@@ -104,7 +109,7 @@ public class UserUtils {
 	 * XXX TEST : ok
 	 */
 	public static boolean isUserInDB(int userId) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
-		ResultSet result = DBMapper.executeQuery(IS_ID_IN_DB_QUERY, QueryType.SELECT, userId);
+		ResultSet result = DBMapper.executeQuery(GET_USER_INFO_BY_ID_QUERY, QueryType.SELECT, userId);
 		boolean found = result.next();
 		result.close();
 		
@@ -112,6 +117,27 @@ public class UserUtils {
 		
 		
 	}
+	
+	public static User getUser(int userId) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
+		User result = null;
+		ResultSet qResult;
+		String lastName, firstName, login, email;
+		
+		qResult = DBMapper.executeQuery(GET_USER_INFO_BY_ID_QUERY, QueryType.SELECT, userId);
+		
+		if(!qResult.next())
+			return null;
+		
+		lastName = qResult.getString(LASTNAME_ATTR_NAME);
+		firstName = qResult.getString(FIRSTNAME_ATTR_NAME);
+		login = qResult.getString(LOGIN_ATTR_NAME);
+		email = qResult.getString(EMAIL_ATTR_NAME);
+		
+		result = new User(userId, login, email, firstName, lastName);
+		
+		return result;
+	}
+	
 	
 	public static void main(String[] args) {
 		try {

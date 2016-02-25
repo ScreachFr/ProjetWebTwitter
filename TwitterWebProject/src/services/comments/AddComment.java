@@ -32,15 +32,13 @@ public class AddComment extends HttpServlet {
 			throws ServletException, IOException {
 		JSONObject answer;
 		String userId;
-		String authorLogin;
 		String text;
 		
 		userId = req.getParameter(PARAM_USERID);
-		authorLogin = req.getParameter(PARAM_AUTHORLOGIN);
 		text = req.getParameter(PARAM_TEXT);
 		
 		
-		answer = CommentsUtils.addComment(userId, authorLogin, text);
+		answer = CommentsUtils.addComment(userId, text);
 		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());

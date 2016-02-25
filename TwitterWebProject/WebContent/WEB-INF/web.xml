@@ -37,6 +37,11 @@
 				<servlet-name>GetFollowers</servlet-name> 
 				<servlet-class>services.followers.GetFollowers</servlet-class> 
 			</servlet>
+		<!-- Comment related -->
+			<servlet> 
+				<servlet-name>AddComment</servlet-name> 
+				<servlet-class>services.comments.AddComment</servlet-class> 
+			</servlet>
 	
 	<!-- Template
 	
@@ -61,29 +66,34 @@
 			</servlet-mapping>
 	
 		<!-- User creation -->
-		<servlet-mapping> 
-			<servlet-name>CreateUser</servlet-name> 
-			<url-pattern>/user/create</url-pattern> 
-		</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>CreateUser</servlet-name> 
+				<url-pattern>/user/create</url-pattern> 
+			</servlet-mapping>
 	
 		<!-- Follow related -->
-		<servlet-mapping> 
-			<servlet-name>Follow</servlet-name> 
-			<url-pattern>/follow/add</url-pattern> 
-		</servlet-mapping>
-		<servlet-mapping> 
-			<servlet-name>Unfollow</servlet-name> 
-			<url-pattern>/follow/remove</url-pattern> 
-		</servlet-mapping>
-		<servlet-mapping> 
-			<servlet-name>GetFollows</servlet-name> 
-			<url-pattern>/follow/getfollows</url-pattern> 
-		</servlet-mapping>
-		<servlet-mapping> 
-			<servlet-name>GetFollowers</servlet-name> 
-			<url-pattern>/follow/getfollows</url-pattern> 
-		</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>Follow</servlet-name> 
+				<url-pattern>/follow/add</url-pattern> 
+			</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>Unfollow</servlet-name> 
+				<url-pattern>/follow/remove</url-pattern> 
+			</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>GetFollows</servlet-name> 
+				<url-pattern>/follow/getfollows</url-pattern> 
+			</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>GetFollowers</servlet-name> 
+				<url-pattern>/follow/getfollows</url-pattern> 
+			</servlet-mapping>
 	
+		<!-- Comment related -->
+			<servlet-mapping> 
+				<servlet-name>AddComment</servlet-name> 
+				<url-pattern>/comment/add</url-pattern> 
+			</servlet-mapping>
 	<!-- Template
 	<servlet-mapping> 
 		<servlet-name>NAME</servlet-name> 
