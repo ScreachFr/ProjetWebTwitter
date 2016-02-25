@@ -1,6 +1,10 @@
 TODO list :
+-Update database (friends -> followers ; idusers / user_id -> userid ; change insert)
+-Test classes : isKeyValid
+-AddComment : getUser with SQL Database
+-Search : last messages ; last messages of followers ; last messages of someone
+-Like
+-HTML/CSS/JS : index.html ; something nice ; links to servlet
+-Retweet ?
 
-DONE-Make the server check if the email is duplacated in database.
--Test classes.
 -Make more classes private.
--Update database with new tables(friends for example).
