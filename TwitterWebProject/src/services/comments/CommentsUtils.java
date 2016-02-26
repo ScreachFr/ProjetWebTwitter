@@ -6,9 +6,12 @@ import org.bson.Document;
 import org.json.simple.JSONObject;
 
 import services.ServicesTools;
+import services.auth.AuthErrors;
 import services.auth.AuthenticationUtils;
+import services.errors.ServerErrors;
 import services.user.User;
 import services.user.UserUtils;
+import utils.Debug;
 import database.DBMapper;
 import database.DataBaseErrors;
 import database.MongoMapper;
@@ -29,18 +32,16 @@ public class CommentsUtils {
 		
 		
 		try {
+			
+			
+			if (!AuthenticationUtils.isKeyValid(key, AuthenticationUtils.KEY_VALIDITY_METHOD))
+				return ServicesTools.createJSONError(ServerErrors.INVALID_KEY);
+			
 			userId = AuthenticationUtils.getUserIdByKey(key);
 			crtUser = UserUtils.getUser(userId);
 
-			Document com2 = new Document();
+			putComment(userId, DBMapper.getTimeNow(), crtUser.getLogin(), content);
 			
-			com2.put(USER_ID_MONGO, crtUser.getId());
-			com2.put(DATE_MONGO, DBMapper.getTimeNow());
-			com2.put(AUTHOR_LOGIN_MONGO, crtUser.getLogin());
-			com2.put(CONTENT_MONGO, content);
-			
-			MongoMapper.executeInsertOne(COMMENT_COLLECTION_NAME, com2);
-		
 			return ServicesTools.generatePositiveAnswer();
 			
 		} catch (SQLException e) {
@@ -51,15 +52,24 @@ public class CommentsUtils {
 			return ServicesTools.createJSONError(DataBaseErrors.QUERY_FAILED);
 		}
 		
-		
-		
-		
 	}
+	
+	private static void putComment(int userId, String time, String authorLogin, String content) throws SQLException {
+		Document doc = new Document();
+		
+		doc.put(USER_ID_MONGO, userId);
+		doc.put(DATE_MONGO, time);
+		doc.put(AUTHOR_LOGIN_MONGO, authorLogin);
+		doc.put(CONTENT_MONGO, content);
+		
+		MongoMapper.executeInsertOne(COMMENT_COLLECTION_NAME, doc);
+	}
+	
 	
 	public static void main(String[] args) {
 //		System.out.println(AuthenticationUtils.login("debug", "password"));
 		
-		String key = "672953b7552449bea509ea7889226585";
+		String key = "b293d9f187a14182b6b21914c7f86881";
 		
 		System.out.println(CommentsUtils.addComment(key, "Hello world!"));
 		

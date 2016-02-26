@@ -109,12 +109,14 @@ public class AuthenticationUtils {
 		if (method) {
 			Calendar duration = Calendar.getInstance();
 			
+			duration.setTime(validity);
+			
 			duration.set(Calendar.HOUR, duration.get(Calendar.HOUR) + KEY_VALIDITY_DURATION_HOUR);
 			duration.set(Calendar.MINUTE, duration.get(Calendar.MINUTE) + KEY_VALIDITY_DURATION_MINUTE);
 			duration.set(Calendar.SECOND, duration.get(Calendar.SECOND) + KEY_VALIDITY_DURATION_SECOND);
 			
-                                                                                                   			
-			result = new Date(System.currentTimeMillis()).before(duration.getTime());
+			
+			result = !(new Date(System.currentTimeMillis()).after(duration.getTime()));
 		} else {
 			result =  validity.before(new Date(System.currentTimeMillis()));
 		}
