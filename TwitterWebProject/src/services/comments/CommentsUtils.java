@@ -1,9 +1,15 @@
 package services.comments;
 
+import java.lang.reflect.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bson.Document;
 import org.json.simple.JSONObject;
+
+import com.mongodb.client.FindIterable;
 
 import services.ServicesTools;
 import services.auth.AuthErrors;
@@ -19,21 +25,25 @@ import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 
 public class CommentsUtils {
-	private final static String USER_ID_MONGO = "userid";
-	private final static String DATE_MONGO = "date";
-	private final static String AUTHOR_LOGIN_MONGO = "author_login";
-	private final static String CONTENT_MONGO = "content";
-	private final static String COMMENT_COLLECTION_NAME = "comments";
+	public final static String USER_ID_MONGO = "userid";
+	public final static String DATE_MONGO = "date";
+	public final static String AUTHOR_LOGIN_MONGO = "author_login";
+	public final static String CONTENT_MONGO = "content";
+	public final static String COMMENT_COLLECTION_NAME = "comments";
 	
-	
+	/**
+	 * Add a comment.
+	 * @param key
+	 * 	User's key.
+	 * @param content
+	 * 	Content of the comment.
+	 * @return
+	 */
 	public static JSONObject addComment(String key, String content) {
 		User crtUser;
 		int userId;
 		
-		
 		try {
-			
-			
 			if (!AuthenticationUtils.isKeyValid(key, AuthenticationUtils.KEY_VALIDITY_METHOD))
 				return ServicesTools.createJSONError(ServerErrors.INVALID_KEY);
 			
@@ -54,6 +64,36 @@ public class CommentsUtils {
 		
 	}
 	
+	/**
+	 * Returns comments of an user.
+	 * @param userId
+	 * 	User to use.
+	 * @param page
+	 * 	Page number. Start at 0.
+	 * @param nbPerPage
+	 * 	Amount of comment per page.
+	 * @return
+	 * 	JSON answer.
+	 */
+	public static JSONObject getComments(int userId, int page, int nbPerPage) {
+		JSONObject result = new JSONObject();
+		ArrayList<Comment> comments;
+		ArrayList<JSONObject> jsonComments = new ArrayList<>();
+		
+		try {
+			comments = fetchComments(userId, page, nbPerPage);
+			for (Comment comment : comments) {
+				jsonComments.add(comment.toJSON());
+			}
+
+			result.put(COMMENT_COLLECTION_NAME, jsonComments);
+			return result;
+			
+		} catch (SQLException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
+		}
+	}
+	
 	private static void putComment(int userId, String time, String authorLogin, String content) throws SQLException {
 		Document doc = new Document();
 		
@@ -65,14 +105,40 @@ public class CommentsUtils {
 		MongoMapper.executeInsertOne(COMMENT_COLLECTION_NAME, doc);
 	}
 	
+	private static ArrayList<Comment> fetchComments(int userId, int page, int nbPerPage) throws SQLException {
+		ArrayList<Comment> result = new ArrayList<>();
+		int startIndex;
+		FindIterable<Document> qResult;
+		Map<String, Object> args = new HashMap<>();
+		
+		args.put(USER_ID_MONGO, userId);
+		startIndex = page * nbPerPage;
+		
+		qResult = MongoMapper.executeGet(COMMENT_COLLECTION_NAME, args, startIndex);
+		
+		int i = 0;
+		for (Document document : qResult) {
+			result.add(new Comment(userId, document.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(document.getString(DATE_MONGO)),
+					document.getString(CONTENT_MONGO)));
+			i++;
+			if(i >= nbPerPage)
+				break;
+		}
+		
+		
+		return result;
+	}
+	
 	
 	public static void main(String[] args) {
 //		System.out.println(AuthenticationUtils.login("debug", "password"));
 		
-		String key = "b293d9f187a14182b6b21914c7f86881";
+//		String key = "b293d9f187a14182b6b21914c7f86881";
+//		
+//		System.out.println(CommentsUtils.addComment(key, "Hello world!"));
 		
-		System.out.println(CommentsUtils.addComment(key, "Hello world!"));
 		
+		System.out.println(getComments(1, 0, 1));
 		
 	}
 }
