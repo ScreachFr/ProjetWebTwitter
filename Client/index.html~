@@ -74,7 +74,7 @@
 								<strong>142</strong>
 							</span>
 						</div>
-						<div class="stat">
+						<div>
 							<span class="stat-name">
 								Follows
 							</span>
@@ -83,7 +83,7 @@
 								<strong>226</strong>
 							</span>
 						</div>
-						<div class="stat">
+						<div>
 							<span class="stat-name">
 								Followers
 							</span>

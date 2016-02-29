@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+	<!--HEAD-->
+	<head>
+		<!-- Loading Bootstrap -->
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+
+		<!-- Loading Flat UI -->
+		<link href="res/Flat-UI-master/dist/css/flat-ui.css" rel="stylesheet" />
+		<script src="res/Flat-UI-master/dist/js/flat-ui.js"></script>
+		<meta charset="utf-8" />
+		
+		<title>Site title goes here!</title>
+	</head>
+	<!--END HEAD-->
+	
+	<!--BODY-->
+	<body>
+<div class="row">
+        <div class="col-xs-3">
+          <h3 class="demo-panel-title">Checkboxes</h3>
+          <label class="checkbox" for="checkbox1">
+            <input type="checkbox" value="" id="checkbox1" data-toggle="checkbox">
+            Unchecked
+          </label>
+          <label class="checkbox" for="checkbox2">
+            <input type="checkbox" checked="checked" value="" id="checkbox2" data-toggle="checkbox" checked="">
+            Checked
+          </label>
+          <label class="checkbox" for="checkbox3">
+            <input type="checkbox" value="" id="checkbox3" data-toggle="checkbox" disabled="">
+            Disabled unchecked
+          </label>
+          <label class="checkbox" for="checkbox4">
+            <input type="checkbox" checked="checked" value="" id="checkbox4" data-toggle="checkbox" disabled="" checked="">
+            Disabled checked
+          </label>
+        </div> <!-- /checkboxes col-xs-3 -->
+
+
+	</body>
+	<!--END BODY-->
+</html>
