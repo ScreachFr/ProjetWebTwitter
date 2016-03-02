@@ -40,28 +40,6 @@ public class MongoMapper {
 	}
 	
 	
-	public static BasicDBObject executeQuery(String collection,QueryType type, Document doc) throws SQLException {
-		MongoDatabase database = getMongoDBConnection();
-		BasicDBObject result = null;
-		MongoCollection<Document> collect = database.getCollection(collection);
-
-		switch (type) {
-		case SELECT:
-			//TODO : remake how (Mongo) DBMapper is make : choice of the query is made with methods, not a string to send.
-			break;
-		case INSERT:
-			collect.insertOne(doc);
-			break;
-		case DELETE:
-			collect.deleteOne(doc);
-			break;
-		case UPDATE:
-			break;
-		}
-		
-		return result;
-
-	}
 	
 	public static void executeInsertOne(String collection, Document doc) throws SQLException{
 		MongoDatabase database = getMongoDBConnection();
@@ -103,25 +81,5 @@ public class MongoMapper {
 	}
 	
 	
-	public enum QueryType {
-		SELECT, UPDATE, DELETE, INSERT;
-	}
-	
-	
-	public static void main(String[] args) {
-		try {
-			Map<String, Object> params = new HashMap<>();
-			params.put("userid", 5);
-			
-			FindIterable<Document> result = executeGet("comments", params, 0);
-			
-			for (Document document : result) {
-				System.out.println(document.get("content"));
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }
 

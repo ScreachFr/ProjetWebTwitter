@@ -45,38 +45,5 @@ public class AddComment extends HttpServlet {
 		resp.setContentType("text/plain");
 	}
 
-	public static void main(String[] args) {
-//		Mongo m = new Mongo("132.227.201.129", 27130); // Everything in comment is deprecated, so if the non deprecated work, no reason to keep the commented lines
-		MongoClient m2 = new MongoClient("132.227.201.129", 27130);
-		
-//		DB db = m.getDB("gr3_dupas_gaspar");
-		MongoDatabase db2 = m2.getDatabase("gr3_dupas_gaspar");
-	
-//		DBCollection comments = db.getCollection("comments");
-		MongoCollection<Document> comments2 = db2.getCollection("comments");
-	
-//		BasicDBObject com = new BasicDBObject();
-		Document com2 = new Document();
-
-//		com.put("user_id", 1);
-//		com.put("author_login", "1");
-	
-		GregorianCalendar calendar = new GregorianCalendar();
-		Date dateAtM = calendar.getTime();
-		
-		com2.put("user_id", 1); //TODO : How rename documents from MongoDB
-		com2.put("date", dateAtM);
-		com2.put("author_login", "1");
-		com2.put("text", "blabla");
-
-		System.out.println("Test begin insert");
-//		comments.insert(com);
-		
-		comments2.insertOne(com2);
-		
-		System.out.println("Test end insert");
-		
-		m2.close();
-	}
 
 }

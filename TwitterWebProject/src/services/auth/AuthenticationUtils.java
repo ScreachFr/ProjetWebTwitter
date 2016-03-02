@@ -18,6 +18,7 @@ import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 import services.ServicesTools;
 import services.errors.ServerErrors;
+import services.user.UserUtils;
 import utils.Debug;
 
 public class AuthenticationUtils {
@@ -39,6 +40,8 @@ public class AuthenticationUtils {
 	private final static String REMOVE_KEY_BY_KEY_QUERY 		= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
 	//UPDATE
 	private final static String UPDATE_KEY_VALIDITY_QUERY		= "UPDATE `gr3_dupas_gaspar`.`sessions` SET `expiration` = ? WHERE `user_id` = ?;";
+	private final static String CHANGE_PASSWORD_QUERY			= "UPDATE `gr3_dupas_gaspar`.`users` SET `password` = SHA2(?, 256) WHERE `user_id` = ?;";
+	
 	//COLUMN NAME
 	private final static String USER_ID_USERS 					= "idusers";
 	private final static String KEY_SESSIONS 					= "key";
@@ -347,23 +350,64 @@ public class AuthenticationUtils {
 
 		return AuthenticationUtils.generateLogoutAnswer();
 	}
-
-	public static void main(String[] args) {
-//		System.out.println(UserUtils.createUser("debug", "password", "mail").toJSONString());
-//		
-//		System.out.println(login("debug", "password").toJSONString());
-		String key = "672953b7552449bea509ea7889226585";
+	
+	/**
+	 * Change an user's password.
+	 * @param key
+	 * 	User's authentication key.
+	 * @param oldPwd
+	 * 	Old password.
+	 * @param newPwd
+	 * 	New password.
+	 * @return
+	 * 	JSON answer.
+	 * XXX TEST : not done yet
+	 */
+	public static JSONObject changePassword(String key, String oldPwd, String newPwd) {
+		int userId;
+		String login;
+		
 		
 		try {
-//			System.out.println(isKeyValid(key, KEY_VALIDITY_METHOD));
-//			System.out.println(isDBContainsKey(key));
-			System.out.println(getUserIdByKey(key));
-		} catch (CannotConnectToDatabaseException | QueryFailedException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (isKeyValid(key, KEY_VALIDITY_METHOD)) {
+				
+				userId = getUserIdByKey(key); 
+				login = UserUtils.getUser(userId).getLogin();
+				
+				if (checkLoginAndPassword(login, oldPwd)) {
+					changePassword(userId, newPwd);
+					
+					return ServicesTools.generatePositiveAnswer();
+				} else {
+					return ServicesTools.createJSONError(AuthErrors.BAD_LOGIN_OR_PASSWORD);
+				}
+				
+			} else {
+				return ServicesTools.createJSONError(ServerErrors.INVALID_KEY);
+			}
+		} catch (SQLException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
+		} catch (CannotConnectToDatabaseException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.CANNOT_CONNECT_TO_DATABASE);
+		} catch (QueryFailedException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.QUERY_FAILED);
 		}
-//		
-//		System.out.println(logout("debug"));
+		
 	}
+	
+	/**
+	 * Change an user's password.
+	 * @param userId
+	 * 	User who needs to change password.
+	 * @param newPwd
+	 * 	New password.
+	 * @throws CannotConnectToDatabaseException
+	 * @throws QueryFailedException
+	 * XXX TEST : not done yet
+	 */
+	private static void changePassword(int userId, String newPwd) throws CannotConnectToDatabaseException, QueryFailedException {
+		DBMapper.executeQuery(CHANGE_PASSWORD_QUERY, QueryType.UPDATE, newPwd, userId);
+	}
+
 
 }

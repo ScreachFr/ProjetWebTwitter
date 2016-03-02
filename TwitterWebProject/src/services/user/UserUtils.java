@@ -14,7 +14,7 @@ import services.ServicesTools;
 import services.errors.ServerErrors;
 
 public class UserUtils {
-	private final static String INSERT_USER_QUERY 				= "INSERT INTO users (idusers, login, password, email) VALUES (DEFAULT, ?, SHA2(?, 256), ?);";
+	private final static String INSERT_USER_QUERY 				= "INSERT INTO users (idusers, login, password, email, prenom, nom) VALUES (DEFAULT, ?, SHA2(?, 256), ?, ?, ?);";
 	private final static String CHECK_LOGIN_QUERY 				= "SELECT login FROM users WHERE login = ? OR email = ?;";
 	private final static String GET_USER_INFO_BY_ID_QUERY 		= "SELECT * FROM users WHERE idusers = ?;";
 	
@@ -36,7 +36,7 @@ public class UserUtils {
 	 * 	JSON response.
 	 *  XXX TEST : ok
 	 */
-	public static JSONObject createUser(String login, String password, String email) {
+	public static JSONObject createUser(String login, String password, String email, String firstName, String lastName) {
 		if (ServicesTools.nullChecker(login, password))
 			return ServicesTools.createJSONError(ServerErrors.MISSING_ARGUMENT);
 		else
@@ -44,7 +44,7 @@ public class UserUtils {
 				if (checkLoginAndEmail(login, email)) {
 					return ServicesTools.createJSONError(UserErrors.LOGIN_OR_EMAIL_ALREADY_EXIST);
 				} else
-					UserUtils.addUser(login, password, email);
+					UserUtils.addUser(login, password, email, firstName, lastName);
 				return ServicesTools.generatePositiveAnswer(); 
 			}  catch (SQLException e) {
 				return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
@@ -68,10 +68,10 @@ public class UserUtils {
 	 * @throws QueryFailedException
 	 * XXX TEST : ok
 	 */
-	private static void addUser(String login, String password, String email) 
+	private static void addUser(String login, String password, String email, String firstName, String lastName) 
 			throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
 
-		DBMapper.executeQuery(INSERT_USER_QUERY, QueryType.INSERT, login, password, email);
+		DBMapper.executeQuery(INSERT_USER_QUERY, QueryType.INSERT, login, password, email, firstName, lastName);
 	}
 	
 	/**
@@ -138,14 +138,4 @@ public class UserUtils {
 		return result;
 	}
 	
-	
-	public static void main(String[] args) {
-		try {
-			System.out.println(isUserInDB(-1));
-		} catch (CannotConnectToDatabaseException | QueryFailedException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 }

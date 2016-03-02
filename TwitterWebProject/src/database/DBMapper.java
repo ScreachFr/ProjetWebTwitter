@@ -108,14 +108,6 @@ public class DBMapper {
 	}
 
 
-	public static void main(String[] args) {
-		try {
-			getMySQLConnection();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 }
 
