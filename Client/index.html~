@@ -10,6 +10,12 @@
 		<link href="res/Flat-UI-master/dist/css/flat-ui.css" rel="stylesheet" />
 		<script src="res/Flat-UI-master/dist/js/flat-ui.js"></script>
 		<script src="res/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+		<script src="res/Flat-UI-master/docs/assets/js/application.js"></script>
+		<script src="res/Flat-UI-master/dist/js/vendor/jquery.min.js"></script>
+		<script src="dist/js/vendor/video.js"></script>
+		<script src="res/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+		<script src="res/Flat-UI-master/docs/assets/js/application.js"></script>
+
 		<!-- Custom CSS -->
 		<link rel="StyleSheet" href="css/style.css" type="text/css" />
 		
@@ -104,6 +110,7 @@
 							<div class="form-group">
 								<div class="input-group">
 									<input class="form-control" type="text" placeholder="Quoi de neuf ?">
+									<span class="input-group-btn">
 										<button type="submit" class="btn"><span class="fui-bubble"></span></button>
 									</span>
 								</div>

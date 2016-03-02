@@ -6,7 +6,7 @@
 */
 /*For debug purpose*/
 body {
-	background-color : #61d893;
+	background-color : #79d8a1;
 	
 }
 
@@ -55,7 +55,7 @@ nav {
 .write-message {
 	margin : 15px 0 0 0;
 	border-radius : 10px 10px 0 0;
-	background : #adedc7;
+	background : #bbedd0;
 	border: solid 1px #c9c9c9;
 }
 
