@@ -53,7 +53,7 @@
 				
 				<div class="form-group">
 					<input type="password" class="form-control login-field" value="" placeholder="Confirmez votre mot de passe" id="conf-pass" />
-					<label class="login-field-icon fui-plus" for="conf-pass"></label>
+					<label class="login-field-icon fui-plis" for="conf-pass"></label>
 				</div>
 
 				<a class="btn btn-primary btn-lg btn-block" href="#">Insciption</a>

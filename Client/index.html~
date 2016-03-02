@@ -58,13 +58,13 @@
 		<main>
 			<div class="container">
 				<!-- ASIDE -->
-				<aside class="panel panel-primary">
-					<div class="panel-heading">
+				<aside class="panel">
+					<div class="panel-heading aside-heading">
 						<img src="img/100x100PH.png" class="thumbnail" />
 						<h5>Prenom NOM</h5>
 						<p>@login</p>
 					</div>
-					<div class="panel-body">
+					<div class="panel-body aside-body">
 						<div class="stat">
 							<span class="stat-name">
 								Messages
@@ -74,7 +74,7 @@
 								<strong>142</strong>
 							</span>
 						</div>
-						<div>
+						<div class="stat">
 							<span class="stat-name">
 								Follows
 							</span>
@@ -83,7 +83,7 @@
 								<strong>226</strong>
 							</span>
 						</div>
-						<div>
+						<div class="stat">
 							<span class="stat-name">
 								Followers
 							</span>
@@ -97,18 +97,22 @@
 			
 			
 				<div class="col-md-9 message-container">			
-				<div class="Message">
-					<img src="img/100x100PH.png" class="MsgAvatar thumbnail" />
-					<div class="MsgMain">
-						<p>
-							<span class="MsgAuthor" >NOM Prenom</span>
-							<span class="MsgLogin" >@login</span>
-						</p>
-						<p class="MsgContent" >
-							Lorem ipsum dolor sit consectetur elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. 
-						</p>
+				
+					<div class="write-message">
+						<img src="img/100x100PH.png" class="MsgAvatar thumbnail" />
+						<div class="write-message-content">
+							<div class="form-group">
+								<div class="input-group">
+									<input class="form-control" type="text" placeholder="Quoi de neuf ?">
+										<button type="submit" class="btn"><span class="fui-bubble"></span></button>
+									</span>
+								</div>
+							</div>
+						</div>
 					</div>
-				</div><div class="Message">
+
+				
+				<div class="Message">
 					<img src="img/100x100PH.png" class="MsgAvatar thumbnail" />
 					<div class="MsgMain">
 						<p>

@@ -6,7 +6,7 @@
 */
 /*For debug purpose*/
 body {
-	background-color : #d2e6f2;
+	background-color : #61d893;
 	
 }
 
@@ -45,10 +45,23 @@ nav {
 }
 
 .Message {
-	border: solid 1px;
-	border-color : #c9c9c9;
+	border: solid 1px #c9c9c9;
 	min-height : 150px;
 	background-color : #FFF;
+	
+}
+
+
+.write-message {
+	margin : 15px 0 0 0;
+	border-radius : 10px 10px 0 0;
+	background : #bbedd0;
+	border: solid 1px #c9c9c9;
+}
+
+.write-message-content {
+	margin-top : 1.5%;
+	width : 98%;
 }
 
 .MsgAvatar {
@@ -80,6 +93,17 @@ aside {
 	margin-top : 15px;	
 	width : 20%;
 	float : left;
+	border : 1px solid #27ae60 !important;
+	
+}
+
+.aside-heading {
+	background-color : #2ecc71;
+	color : #FFF;
+}
+
+.aside-body {
+	border-top : 1px solid #27ae60 !important;
 }
 
 aside img {
