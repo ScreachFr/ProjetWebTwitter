@@ -7,7 +7,6 @@
 /*For debug purpose*/
 body {
 	background-color : #79d8a1;
-	
 }
 
 
@@ -98,7 +97,7 @@ aside {
 }
 
 .aside-heading {
-	background-color : #2ecc71;
+	background-color : #27ae60;
 	color : #FFF;
 }
 
@@ -126,6 +125,15 @@ aside h5 {
 
 .stat-value {
 }
+
+#login-container {
+	margin-top : 15px;
+}
+
+
+
+
+
 
 
 
