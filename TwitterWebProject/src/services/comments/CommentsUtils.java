@@ -7,9 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.json.simple.JSONObject;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import services.ServicesTools;
 import services.auth.AuthErrors;
@@ -140,6 +144,20 @@ public class CommentsUtils {
 		
 		System.out.println(getComments(1, 0, 1));
 		
+	}
+
+	public static long getNbMessagesByUserId(int userId) throws SQLException {		
+		MongoDatabase database = MongoMapper.getMongoDBConnection();
+		MongoCollection<Document> collect = database.getCollection(COMMENT_COLLECTION_NAME);
+		BasicDBObject whereQuery = new BasicDBObject();
+
+
+		Map<String, Object> args = new HashMap<>();
+		
+		args.put(USER_ID_MONGO, userId);
+		whereQuery.putAll(args);
+		
+		return collect.count(whereQuery);
 	}
 }
 

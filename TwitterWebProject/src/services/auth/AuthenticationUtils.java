@@ -8,7 +8,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-
 import org.json.simple.JSONObject;
 
 import database.DBMapper;
@@ -17,7 +16,10 @@ import database.DataBaseErrors;
 import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 import services.ServicesTools;
+import services.comments.CommentsUtils;
 import services.errors.ServerErrors;
+import services.followers.FollowerUtils;
+import services.user.User;
 import services.user.UserUtils;
 import utils.Debug;
 
@@ -27,31 +29,36 @@ public class AuthenticationUtils {
 	
 	//Database queries
 	//SELECT
-	private final static String CHECK_LOGIN_AND_PASSWORD_QUERY 	= "SELECT login FROM users WHERE login = ? and password = SHA2(?, 256);";
-	private final static String GET_USER_ID_QUERY 				= "SELECT idusers FROM users WHERE login = ?;";
-	private final static String GET_KEY_QUERY 					= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
-	private final static String GET_KEY_FROM_USER_ID_QUERY 		= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `user_id` = ?;";
-	private final static String GET_KEY_VALIDITY_TIME_QUERY		= "SELECT expiration FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
-	private final static String GET_USER_ID_BY_KEY_QUERY		= "SELECT user_id FROM gr3_dupas_gaspar.sessions WHERE `key` = ?;";
+	private final static String CHECK_LOGIN_AND_PASSWORD_QUERY 		= "SELECT login FROM users WHERE login = ? and password = SHA2(?, 256);";
+	private final static String GET_USER_ID_QUERY 					= "SELECT idusers FROM users WHERE login = ?;";
+	private final static String GET_KEY_QUERY 						= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
+	private final static String GET_KEY_FROM_USER_ID_QUERY 			= "SELECT * FROM `gr3_dupas_gaspar`.`sessions` WHERE `user_id` = ?;";
+	private final static String GET_KEY_VALIDITY_TIME_QUERY			= "SELECT expiration FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
+	private final static String GET_USER_ID_BY_KEY_QUERY			= "SELECT user_id FROM gr3_dupas_gaspar.sessions WHERE `key` = ?;";
+	private final static String GET_INFO_USER_BY_USER_ID_QUERY		= "SELECT idusers, login, email, nom, prenom FROM gr3_dupas_gaspar.users WHERE `idusers` = ?;";
 	//INSERT
-	private final static String ADD_SESSION_QUERY 				= "INSERT INTO `gr3_dupas_gaspar`.`sessions` (`key`, `user_id`, `expiration`, `root`) VALUES (?, ?, ?, ?);";
+	private final static String ADD_SESSION_QUERY 					= "INSERT INTO `gr3_dupas_gaspar`.`sessions` (`key`, `user_id`, `expiration`, `root`) VALUES (?, ?, ?, ?);";
 	//DELETE
-	private final static String REMOVE_KEY_BY_USER_ID_QUERY 	= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `user_id` = ?;";
-	private final static String REMOVE_KEY_BY_KEY_QUERY 		= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
+	private final static String REMOVE_KEY_BY_USER_ID_QUERY 		= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `user_id` = ?;";
+	private final static String REMOVE_KEY_BY_KEY_QUERY 			= "DELETE FROM `gr3_dupas_gaspar`.`sessions` WHERE `key` = ?;";
 	//UPDATE
-	private final static String UPDATE_KEY_VALIDITY_QUERY		= "UPDATE `gr3_dupas_gaspar`.`sessions` SET `expiration` = ? WHERE `user_id` = ?;";
-	private final static String CHANGE_PASSWORD_QUERY			= "UPDATE `gr3_dupas_gaspar`.`users` SET `password` = SHA2(?, 256) WHERE `user_id` = ?;";
+	private final static String UPDATE_KEY_VALIDITY_QUERY			= "UPDATE `gr3_dupas_gaspar`.`sessions` SET `expiration` = ? WHERE `user_id` = ?;";
+	private final static String CHANGE_PASSWORD_QUERY				= "UPDATE `gr3_dupas_gaspar`.`users` SET `password` = SHA2(?, 256) WHERE `user_id` = ?;";
 	
 	//COLUMN NAME
-	private final static String USER_ID_USERS 					= "idusers";
-	private final static String KEY_SESSIONS 					= "key";
-	private final static String USER_ID_SESSIONS				= "user_id";
-	private final static String VALIDITY_SESSIONS 				= "expiration";
+	private final static String USER_ID_USERS 						= "idusers";
+	private final static String KEY_SESSIONS 						= "key";
+	private final static String USER_ID_SESSIONS					= "user_id";
+	private final static String VALIDITY_SESSIONS 					= "expiration";
+	private final static String LOGIN_USERS		 					= "login";
+	private final static String EMAIL_USERS		 					= "email";
+	private final static String LAST_NAME_USERS		 				= "nom";
+	private final static String FIRST_NAME_USERS		 			= "prenom";
 
 	//Key validity duration
-	private final static int KEY_VALIDITY_DURATION_HOUR 		= 1;
-	private final static int KEY_VALIDITY_DURATION_MINUTE 		= 0;
-	private final static int KEY_VALIDITY_DURATION_SECOND 		= 0;
+	private final static int KEY_VALIDITY_DURATION_HOUR 			= 1;
+	private final static int KEY_VALIDITY_DURATION_MINUTE 			= 0;
+	private final static int KEY_VALIDITY_DURATION_SECOND 			= 0;
 
 	//Date manipulation
 	private final static String DATE_PATTERN = "HH:mm:ss";
@@ -262,19 +269,46 @@ public class AuthenticationUtils {
 	 * 	UserId of the user's key.
 	 * @throws CannotConnectToDatabaseException
 	 * @throws QueryFailedException
-	 * XXX TEST : ok
+	 * XXX TEST : not tested
 	 */
 	public static void removeSession(int userId) throws CannotConnectToDatabaseException, QueryFailedException {
 		DBMapper.executeQuery(REMOVE_KEY_BY_USER_ID_QUERY, QueryType.DELETE, userId);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static JSONObject generateLoginAnswer(String key) {
+	public static JSONObject generateLoginAnswer(String key) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
 		JSONObject ret = new JSONObject();
+		ret.put(ServicesTools.KEY_ARG, key);
+		
+		int userId = getUserIdByKey(key);
+		JSONObject infoUsers = getInfoUserByUserId(userId).toJSON();
+		ret.putAll(infoUsers);
+		
+		int nbFollows = FollowerUtils.getNbFollows(userId);
+		ret.put(ServicesTools.NB_FOLLOWS_ARG, nbFollows);
 
-		ret.put("key", key);
+		int nbFollowers = FollowerUtils.getNbFollowers(userId);
+		ret.put(ServicesTools.NB_FOLLOWERS_ARG, nbFollowers);
+		
+		long nbMsgs = CommentsUtils.getNbMessagesByUserId(userId);
+		ret.put(ServicesTools.NB_MESSAGES_ARG, nbMsgs);
 
 		return ret;
+	}
+
+	private static User getInfoUserByUserId(int userId) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
+		ResultSet result = DBMapper.executeQuery(GET_INFO_USER_BY_USER_ID_QUERY, QueryType.SELECT, userId);
+
+		if(!result.next())
+			return null;
+		else {
+			User user = new User(result.getInt(USER_ID_USERS),
+					result.getString(LOGIN_USERS),
+					result.getString(EMAIL_USERS),
+					result.getString(FIRST_NAME_USERS),
+					result.getString(LAST_NAME_USERS));
+			return user;
+		}
 	}
 
 	//TODO find out why this method creates warning. 
