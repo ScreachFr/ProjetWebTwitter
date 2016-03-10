@@ -17,13 +17,17 @@ import services.errors.ServerErrors;
 import services.user.UserUtils;
 
 public class FollowerUtils {
-	private final static String GET_FOLLOW_BY_COUPLE_ID_QUERY 	= "SELECT * FROM `gr3_dupas_gaspar`.`friends` WHERE `user1` = ? AND `user2` = ?;";
-	private final static String GET_FOLLOWERS_QUERY 			= "SELECT user1 FROM `gr3_dupas_gaspar`.`friends` WHERE `user2` = ?;";
-	private final static String GET_FOLLOWING_QUERY				= "SELECT user2 FROM `gr3_dupas_gaspar`.`friends` WHERE `user1` = ?;";
+	private final static String GET_FOLLOW_BY_COUPLE_ID_QUERY 		= "SELECT * FROM `gr3_dupas_gaspar`.`friends` WHERE `user1` = ? AND `user2` = ?;";
+	private final static String GET_FOLLOWERS_QUERY 				= "SELECT user1 FROM `gr3_dupas_gaspar`.`friends` WHERE `user2` = ?;";
+	private final static String GET_FOLLOWING_QUERY					= "SELECT user2 FROM `gr3_dupas_gaspar`.`friends` WHERE `user1` = ?;";
+	private final static String GET_NB_FOLLOWS_BY_USERID_QUERY		= "SELECT count(*) nbFollows FROM gr3_dupas_gaspar.friends WHERE `user1` = ?;";
+	private final static String GET_NB_FOLLOWERS_BY_USERID_QUERY	= "SELECT count(*) nbFollowers FROM gr3_dupas_gaspar.friends WHERE `user2` = ?;";
 	
-	private final static String ADD_FOLLOW_QUERY 				= "INSERT INTO `gr3_dupas_gaspar`.`friends` (`user1`, `user2`, `date`) VALUES (?, ?, ?);";
-	private final static String REMOVE_FOLLOW_QUERY 			= "DELETE FROM `gr3_dupas_gaspar`.`friends` WHERE `user1` = ? AND `user2` = ?;";
+	private final static String ADD_FOLLOW_QUERY 					= "INSERT INTO `gr3_dupas_gaspar`.`friends` (`user1`, `user2`, `date`) VALUES (?, ?, ?);";
+	private final static String REMOVE_FOLLOW_QUERY 				= "DELETE FROM `gr3_dupas_gaspar`.`friends` WHERE `user1` = ? AND `user2` = ?;";
 
+	private final static String NB_FOLLOWS		 					= "nbFollows";
+	private final static String NB_FOLLOWERS		 				= "nbFollowers";
 	
 	/**
 	 * Make an user follow another user.
@@ -236,6 +240,24 @@ public class FollowerUtils {
 		}
 		
 		return result;
+	}
+
+	public static int getNbFollowers(int userId) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
+		ResultSet result = DBMapper.executeQuery(GET_NB_FOLLOWERS_BY_USERID_QUERY, QueryType.SELECT, userId);
+
+		if(!result.next())
+			return -1;
+		else
+			return result.getInt(NB_FOLLOWERS);
+	}
+
+	public static int getNbFollows(int userId) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
+		ResultSet result = DBMapper.executeQuery(GET_NB_FOLLOWS_BY_USERID_QUERY, QueryType.SELECT, userId);
+
+		if(!result.next())
+			return -1;
+		else
+			return result.getInt(NB_FOLLOWS);
 	}
 	
 }

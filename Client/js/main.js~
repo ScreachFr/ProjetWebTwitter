@@ -67,7 +67,7 @@ function fillIndexComments() {
 	
 	
 	for (var i in comments) {
-		$(COMMENTS_MAIN_CONTAINER).preppend(comments[i].getHtml());
+		$(COMMENTS_MAIN_CONTAINER).prepend(comments[i].getHtml());
 	}
 }
 

@@ -6,8 +6,11 @@ import services.errors.ServletError;
 
 public class ServicesTools {
 	//Common args name.
-	public final static String KEY_ARG = "key";
-	public final static String USER_ID_ARG = "userid";
+	public final static String KEY_ARG			= "key";
+	public final static String USER_ID_ARG		= "userid";
+	public final static String NB_FOLLOWS_ARG	= "nbFollows";
+	public final static String NB_FOLLOWERS_ARG	= "nbFollowers";
+	public static final Object NB_MESSAGES_ARG	= "nbMessages";
 	
 	/**
 	 * Check if there's a null in params.
