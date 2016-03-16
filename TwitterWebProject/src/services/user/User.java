@@ -8,12 +8,14 @@ public class User {
 	private String email;
 	private String firstName; //prenom
 	private String lastName;
+	private String avatar;
 
 	public final static String ID			= "userId";
 	public final static String LOGIN		= "login";
 	public final static String EMAIL		= "email";
 	public final static String FIRST_NAME	= "fName";
 	public final static String LAST_NAME	= "lName";
+	public final static String AVATAR 		= "avatar";
 	
 	public User(int id, String login, String email, String firstName, String lastName) {
 		this.id = id;
@@ -21,6 +23,7 @@ public class User {
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.avatar = Gravatar.getGravatarUrl(email);
 	}
 
 	public int getId() {
@@ -43,13 +46,20 @@ public class User {
 		return lastName;
 	}
 	
+	public String getAvatar() {
+		return avatar;
+	}
+	
 	public JSONObject toJSON() {
 		JSONObject ret = new JSONObject();
+		
 		ret.put(ID, id);
 		ret.put(LOGIN, login);
 		ret.put(EMAIL, email);
 		ret.put(FIRST_NAME, firstName);
 		ret.put(LAST_NAME, lastName);
+		ret.put(AVATAR, avatar);
+		
 		return ret;
 	}
 	
