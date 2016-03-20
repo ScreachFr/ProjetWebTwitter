@@ -54,7 +54,7 @@
 	
 				<!-- LOGIN/LOGOUT -->
 				<div class="logs col-md-3">
-					<img src="img/100x100PH.png" class="thumbnail" />
+					<img src="" class="thumbnail avatar-main" />
 					<a href="" onclick="disconnect()"><span class="fui-power"></span> Deconnexion</a>
 				</div>
 			</div>
@@ -68,18 +68,17 @@
 				<!-- ASIDE -->
 				<aside class="panel">
 					<div class="panel-heading aside-heading">
-						<img src="img/100x100PH.png" class="thumbnail" />
+						<img src="" class="thumbnail avatar-main"/>
 						<h5 id="User-name">Prenom NOM</h5>
 						<p id="User-login">@login</p>
 					</div>
 					<div class="panel-body aside-body">
 						<div class="stat">
 							<span class="stat-name">
-								Messages
+								Comments
 							</span>
 							<br />
-							<span class="stat-value">
-								<strong>142</strong>
+							<span class="stat-value" id="Comments-v">
 							</span>
 						</div>
 						<div class="stat">
@@ -87,8 +86,7 @@
 								Follows
 							</span>
 							<br />
-							<span class="stat-value">
-								<strong>226</strong>
+							<span class="stat-value" id="Follows-v">
 							</span>
 						</div>
 						<div class="stat">
@@ -96,8 +94,7 @@
 								Followers
 							</span>
 							<br />
-							<span class="stat-value">
-								<strong>182</strong>
+							<span class="stat-value" id="Followers-v">
 							</span>
 						</div>
 					</div>

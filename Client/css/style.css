@@ -124,6 +124,7 @@ aside h5 {
 }
 
 .stat-value {
+	font-weight : bold;
 }
 
 #login-container {

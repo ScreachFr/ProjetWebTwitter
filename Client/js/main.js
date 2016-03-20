@@ -1,6 +1,8 @@
 const MAIN_PAGE = "index.html";
 const LOGIN_PAGE = "login.html";
 
+const SERVER_URL = "http://192.168.0.20:8080/gr3_dupas_gaspar/";
+
 //Alert const
 const ALERT_TITLE = ".alert-title";
 const ALERT_CONTENT = ".alert-content";
@@ -12,23 +14,39 @@ const CONNEXION_ERROR_BAD_LOGIN_CONTENT = "Mauvais login et/ou mot de passe.";
 
 const USER_LOGIN_ID = "#User-login";
 const USER_NAME_ID = "#User-name";
+const USER_FOLLOWS_ID = "#Follows-v";
+const USER_FOLLOWERS_ID = "#Followers-v";
+const USER_COMMENTS_ID = "#Comments-v";
 
 const COMMENTS_MAIN_CONTAINER = "#Messages";
 
+const AVATAR_MAIN = ".avatar-main";
 
 const CRT_USER_CK = "crtUser";
+
+
+//Server args
+const LOGIN_URL = "user/login";
+const LOGIN_LOGIN = "login";
+const LOGIN_PASSWORD = "password";
+
+const DEFAULT_AVATAR_SIZE = 150;
 
 //Debug user
 const DEBUG_ID = 1;
 const DEBUG_LOGIN = "debug";
+const DEBUG_PASSWORD = "password";
 const DEBUG_FNAME = "Alan";
 const DEBUG_LNAME = "Turing";
 const DEBUG_CONTACT = false;
 
+const DEBUG_JSON_CONNECTION = '{"nbMessages":8,"lName":"Turing","fName":"Allan","nbFollows":1,"nbFollowers":0,"avatar":"https:\/\/en.gravatar.com\/avatar\/8f1373a6019b6427d12726137fc2935e.jpg?d=mm","login":"debug","userId":5,"key":"91a5c0dc422d4f4b9f01a168e766d91f","email":"alexandregaspardcilia@hotmail.fr"}\n';
+
+
 //Debug comment
 //function Comment(id, author, content, date, score) {
 const DEBUG_M_ID = 1;
-const DEBUG_M_AUTHOR = 1;
+const DEBUG_M_AUTHOR = 5;
 const DEBUG_M_CONTENT = "Message de debug. Lorem ipsum dolor sit consectetur elit. Donec a diam lectus.";
 const DEBUG_M_DATE = "00-00-00 00:00:00";
 const DEBUG_M_SCORE = 0;
@@ -39,7 +57,7 @@ function init() {
 	environnement = new Object();
 	environnement.users = {};
 	
-	var debugUser = new User(DEBUG_ID, DEBUG_LOGIN, DEBUG_FNAME, DEBUG_LNAME, DEBUG_CONTACT);
+	var debugUser = User.parseJSON(DEBUG_JSON_CONNECTION);
 	
 	environnement.users[debugUser.id+""] = debugUser;
 	
@@ -52,7 +70,8 @@ function init() {
 }
 
 function setConnectedUserUI() {
-	var user = Cookies.getJSON(CRT_USER_CK);	
+	var user = Cookies.getJSON(CRT_USER_CK);
+	
 		
 	var login = user["login"];
 	var name = user["fName"] + " " + user["lName"];
@@ -60,6 +79,16 @@ function setConnectedUserUI() {
 	
 	$(USER_LOGIN_ID).first().text("@" + login);
 	$(USER_NAME_ID).first().text(name);
+	
+	
+	(user["nbFollowers"] != undefined) ? $(USER_FOLLOWERS_ID).first().text(user["nbFollowers"]+"") : $(USER_FOLLOWERS_ID).first().text("0");
+	(user["nbFollows"] != undefined) ? $(USER_FOLLOWS_ID).first().text(user["nbFollows"]+"") : $(USER_FOLLOWS_ID).first().text("0");	
+	(user["nbComments"] != undefined) ? $(USER_COMMENTS_ID).first().text(user["nbComments"]+"") : $(USER_COMMENTS_ID).first().text("0");
+	
+	$(AVATAR_MAIN).each(function() {
+		$(this).attr("src", addAvatarSize(user["avatar"], DEFAULT_AVATAR_SIZE));
+	});
+
 }
 
 function fillIndexComments() {
@@ -94,13 +123,11 @@ function connexion(form) {
 	
 	
 	if (connect(login, password)) {
-		var user = new User(DEBUG_ID, DEBUG_LOGIN, DEBUG_FNAME, DEBUG_LNAME, DEBUG_CONTACT);
-		Cookies.set(CRT_USER_CK, user.toArray());
 		
-		environnement.users[user.id+""] = user; 
+		
 		
 			
-		window.location.href = MAIN_PAGE; 		
+
 		
 		
 	} else {
@@ -124,7 +151,38 @@ function disconnect() {
 }
 
 function connect(login, password) {
-	//TODO	
+	var jsonString = DEBUG_JSON_CONNECTION;
+	var user;
+/*
+	var request = $.ajax({
+		url: SERVER_URL + LOGIN_URL,
+		type: "post",
+		data: {LOGIN_LOGIN : login, LOGIN_PASSWORD : password},
+		dataType: "jsonp",
+		
+		success: function(data) {
+			console.log(data);
+		}, 
+		
+		error: function (xhr, ajaxOptions, thrownError) {
+		    console.log(xhr);
+		    console.log(ajaxOptions);
+		    console.log(thrownError);
+      	}
+	
+	});
+*/	
+
+	
+	user = User.parseJSON(jsonString);
+	
+	
+	Cookies.set(CRT_USER_CK, user.toArray());
+	
+	
+	environnement.users[user.id+""] = user; 
+	window.location.href = MAIN_PAGE; 		
+	
 	return true;
 }
 
@@ -140,11 +198,12 @@ function hideAlert(element) {
 }
 
 
-function User(id, login, fName, lName, contact) {
+function User(id, login, fName, lName, avatar, contact) {
 	this.id = id;
 	this.login = login;
 	this.fName = fName;
 	this.lName = lName;
+	this.avatar = avatar;
 	
 	this.contact = false;
 	if (contact != undefined)
@@ -155,13 +214,47 @@ function User(id, login, fName, lName, contact) {
 	return this;
 }
 
+User.parseJSON = function(jsonString) {
+	j = $.parseJSON(jsonString);
+	
+	var result = new User(j.userId, j.login, j.fName, j.lName, j.avatar, false);
+	
+	if(j.nbFollows != undefined)
+		result.nbFollows = j.nbFollows;
+	
+	if(j.nbFollowers != undefined)
+		result.nbFollowers = j.nbFollowers;
+	
+	if(j.nbMessages != undefined)
+		result.nbComments = j.nbMessages;
+
+	
+
+	
+	return result;
+}
+
+function addAvatarSize(avatar, size) {
+	return avatar + "&size=" + size;
+}
+
 User.prototype.modifStatus = function() {
 	this.contact = !this.contact;
 }
 
 User.prototype.toArray = function() {
 	var result = {"id":this.id, "login":this.login, "fName":this.fName,
-					 "lName":this.lName, "contact":this.contact};
+					 "lName":this.lName, "avatar": this.avatar, "contact":this.contact};
+					 
+	if(this.nbFollows != undefined)
+		result["nbFollows"] = this.nbFollows;
+	
+	if(this.nbFollowers != undefined)
+		result["nbFollowers"] = this.nbFollowers;
+	
+	if(this.nbComments != undefined)
+		result["nbComments"] = this.nbComments;
+		
 	
 	return result;
 }
@@ -184,6 +277,7 @@ function Comment(id, author, content, date, score) {
 
 Comment.prototype.getHtml = function() {
 	var result = "";
+	
 
 	var auth = environnement.users[this.author+""];
 	
@@ -192,44 +286,18 @@ Comment.prototype.getHtml = function() {
 	}
 	
 	
-	/*
-	<div class="Message">
-		<img src="img/100x100PH.png" class="MsgAvatar thumbnail" />
-		<div class="MsgMain">
-			<p>
-				<span class="MsgAuthor" >NOM Prenom</span>
-				<span class="MsgLogin" >@login</span>
-			</p>
-			<p class="MsgContent" >
-				Lorem ipsum dolor sit consectetur elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. 
-			</p>
-		</div>
-	</div>
-	*/
-	
 	result += '<div class="Message">\n';
-	result += '<img src="img/100x100PH.png" class="MsgAvatar thumbnail" />\n';
+	result += '<img src="' + auth.avatar + '" class="MsgAvatar thumbnail" />\n';
 	result += '<div class="MsgMain">\n';
 	result += '<p>\n';
 	result += '<span class="MsgAuthor">' + auth.fName + " " + auth.lName + '</span>\n';
-	result += '<span class="MsgLogin">' + auth.login + '</span>\n';
+	result += '<span class="MsgLogin">@' + auth.login + '</span>\n';
 	result += '</p>\n';
 	result += '<p class="MsgContent" >\n';
 	result += this.content;
 	result += '</p>\n';
 	result += '</div>';
 	result += '</div>';
-	
-	/*
-	s+= "<p>Put html here.</p>";
-	//this.date.format('dd/mm/yyyy HH:MM:ss'); pour formater la date.
-	
-	//Faire attention à ce qu'il y est un utilisateur connecté pour afficher ce genre de chose.
-	if (this.author.contact) {
-		s+= "<p>Put contact related content here.</p>";
-	}
-	
-	*/
 	
 	return result;
 }
