@@ -47,7 +47,7 @@ const DEBUG_JSON_CONNECTION = '{"nbMessages":8,"lName":"Turing","fName":"Allan",
 //function Comment(id, author, content, date, score) {
 const DEBUG_M_ID = 1;
 const DEBUG_M_AUTHOR = 5;
-const DEBUG_M_CONTENT = "Message de debug. Lorem ipsum dolor sit consectetur elit. Donec a diam lectus.";
+const DEBUG_M_CONTENT = "Message de debug. https://open.spotify.com/track/4EqeF32K6j53ZCaOUWL4ol Lorem ipsum dolor sit consectetur elit. Donec a diam lectus.";
 const DEBUG_M_DATE = "00-00-00 00:00:00";
 const DEBUG_M_SCORE = 0;
 
@@ -61,10 +61,21 @@ function init() {
 	
 	environnement.users[debugUser.id+""] = debugUser;
 	
+	setupIntegrationEnv();
+	
 	
 	if(Cookies.get(CRT_USER_CK) != undefined) {
 		setConnectedUserUI();
 		fillIndexComments();
+	}
+	
+}
+
+function setupIntegrationEnv() {
+	environnement.integration = {};
+	
+	for (var i = 0; i < regex.length; i++) {
+		environnement.integration[i] = new Intregration(regex[i], replacer[i]);
 	}
 	
 }
@@ -107,7 +118,7 @@ function gotoIndex() {
 function getDebugComments() {
 	var result = {};
 	
-	for (var i = 0; i < 10; i++) {
+	for (var i = 0; i < 5; i++) {
 		result[i] = new Comment(i, DEBUG_M_AUTHOR, DEBUG_M_CONTENT, DEBUG_M_DATE, DEBUG_M_SCORE);
 	}
 	
@@ -277,14 +288,49 @@ function Comment(id, author, content, date, score) {
 
 Comment.prototype.getHtml = function() {
 	var result = "";
-	
-
+	var integratedContent;
+	var media = "";
 	var auth = environnement.users[this.author+""];
 	
 	if(auth == undefined) {
 		//TODO Get author here
 	}
 	
+	
+	integratedContent = this.content;
+	
+	var stopSearch = false;
+	var crt;
+	var matchValues;
+	
+	
+	for (var i in environnement.integration) {
+		crt = environnement.integration[i];
+
+		matchValues = this.content.match(crt.regex);
+		
+		for(var j in matchValues) {
+			crtMatch = matchValues[j];
+			
+			crtMatch = crtMatch.replace(/\?/gim, "\\?");
+		
+			integratedContent = integratedContent.replace(new RegExp(crtMatch, "igm"), crt.getHtml(matchValues[j]));
+		}
+			
+	}
+	
+	if (this.content.match(Youtube.regex) != null) {
+		media = Youtube.toHtml(this.content.match(Youtube.regex)[0]);
+	} else if (this.content.match(Spotify.regex) != null) {
+		media = Spotify.toHtml(this.content.match(Spotify.regex)[0]);
+	} else if (this.content.match(Image.regex) != null) {
+		media = Image.toHtml(this.content.match(Image.regex)[0]);
+	} else if (this.content.match(Video.regex) != null) {
+		media = Video.toHtml(this.content.match(Video.regex)[0]);
+	} else if (this.content.match(Audio.regex) != null) {
+		media = Audio.toHtml(this.content.match(Audio.regex)[0]);
+	}
+
 	
 	result += '<div class="Message">\n';
 	result += '<img src="' + auth.avatar + '" class="MsgAvatar thumbnail" />\n';
@@ -294,8 +340,9 @@ Comment.prototype.getHtml = function() {
 	result += '<span class="MsgLogin">@' + auth.login + '</span>\n';
 	result += '</p>\n';
 	result += '<p class="MsgContent" >\n';
-	result += this.content;
+	result += integratedContent;
 	result += '</p>\n';
+	result += '<div class="media-container">' + media + "</div>";
 	result += '</div>';
 	result += '</div>';
 	
@@ -362,9 +409,6 @@ SearchResults.revival = function(key, value) {
 			}
 	}
 }
-
-
-
 
 
 
