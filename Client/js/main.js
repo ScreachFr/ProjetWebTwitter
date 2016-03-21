@@ -47,7 +47,7 @@ const DEBUG_JSON_CONNECTION = '{"nbMessages":8,"lName":"Turing","fName":"Allan",
 //function Comment(id, author, content, date, score) {
 const DEBUG_M_ID = 1;
 const DEBUG_M_AUTHOR = 5;
-const DEBUG_M_CONTENT = "Message de debug. https://open.spotify.com/track/4EqeF32K6j53ZCaOUWL4ol Lorem ipsum dolor sit consectetur elit. Donec a diam lectus.";
+const DEBUG_M_CONTENT = "Message de debug. https://open.spotify.com/artist/63MQldklfxkjYDoUE4Tppz Lorem ipsum dolor sit consectetur elit. Donec a diam lectus.";
 const DEBUG_M_DATE = "00-00-00 00:00:00";
 const DEBUG_M_SCORE = 0;
 

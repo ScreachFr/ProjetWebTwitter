@@ -6,7 +6,12 @@
 */
 /*For debug purpose*/
 body {
+	background-color : #ECECEC;
+}
+
+.login-body {
 	background-color : #79d8a1;
+
 }
 
 
@@ -44,7 +49,9 @@ nav {
 }
 
 .Message {
-	border: solid 1px #c9c9c9;
+	border-bottom : solid 1px #c9c9c9;
+	border-left : solid 1px #c9c9c9;
+	border-right : solid 1px #c9c9c9;
 	min-height : 150px;
 	background-color : #FFF;
 	
@@ -53,9 +60,9 @@ nav {
 
 .write-message {
 	margin : 15px 0 0 0;
-	border-radius : 10px 10px 0 0;
-	background : #bbedd0;
-	border: solid 1px #c9c9c9;
+	border-radius : 4px 4px 0 0;
+	background : #bdc3c7;
+	border: solid 1px #95a5a6;
 }
 
 .write-message-content {
@@ -75,6 +82,10 @@ nav {
 	margin-right : 10px;
 }
 
+.MsgContent a:hover {
+	text-decoration : underline;
+}
+
 .MsgAuthor {
 	font-weight : bold;
 	font-size : 23px;
@@ -86,6 +97,7 @@ nav {
 
 .message-container {
 	padding-right : 0;
+	margin-bottom : 15px;
 }
 
 aside {
@@ -137,7 +149,9 @@ aside h5 {
 }
 
 .spotify {
+	display : block;
 	width : 100%;
+	margin : auto;
 }
 
 .image-media {
@@ -161,9 +175,6 @@ aside h5 {
 	margin-right : auto;
 	margin-bottom : 15px;
 }
-
-
-
 
 
 

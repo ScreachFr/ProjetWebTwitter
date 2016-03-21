@@ -1,14 +1,18 @@
 const ARG_REGEX = /\&arg\&/ig;
+const ARG2_REGEX = /\&arg2\&/ig;
 const ARG = "&arg&";
+const ARG2 = "&arg2&";
+
+const PROTOC_REGEX = /((http|ftp|file|https):\/\/)/gim;
+
+const MAX_LINK_LENGTH = 25;
 
 var regex = [
-	/(#a=)(((http|ftp|file|https):\/\/)[a-zA-Z0-9._/+@#/%&?=~_-]+(\.[a-zA-Z0-9._/+@#/&%?=~_-]+))( )([^#]+)(#)/gim, //image link 
 	/(((http|ftp|file|https):\/\/)[a-zA-Z0-9._/+@#/%&?=~_-]+(\.[a-zA-Z0-9._/+@#/&%?=~_-]+))/gim, //link with args
 ];
 
 var replacer = [
-	"<a href='" + ARG + "' target='_blank'>" + ARG + "</a>",
-	"<a href='" + ARG + "' target='_blank'>" + ARG + "</a>",
+	"<a href='" + ARG + "' target='_blank'>" + ARG2 + "</a>",
 ];
 
 
@@ -19,6 +23,8 @@ function Intregration(regex, substitute) {
 
 Intregration.prototype.getHtml = function(data) {
 	var result = "";
+	var formData = data;
+	
 	
 	
 	result = this.substitute;
@@ -26,6 +32,14 @@ Intregration.prototype.getHtml = function(data) {
 	
 	result = result.replace(ARG_REGEX, data);
 	
+	formData = formData.replace(PROTOC_REGEX, "");
+	
+	if(data.length > MAX_LINK_LENGTH) {
+		formData = formData.substring(0, MAX_LINK_LENGTH) + ...;
+		
+	}
+	
+	result = result.replace(ARG2_REGEX, formData);
 	
 	return result;
 }
@@ -33,6 +47,11 @@ Intregration.prototype.getHtml = function(data) {
 Intregration.prototype.regMatch = function(str) {
 	return str.search(this.regex);
 }
+
+
+Link = function() {}
+
+Link.regex
 
 Youtube = function() {}
 
@@ -63,9 +82,8 @@ Spotify.toHtml = function(url){
 	
 	result += "<iframe class='spotify' src='https://embed.spotify.com/?uri=";
 	result += url;
-	result += "' class='messageImage' width='300' height='380' frameborder='0' allowtransparency='true'></iframe>";
+	result += "&theme=white' width='300' height='80' frameborder='0' allowtransparency='true'></iframe>";
 	
-	console.log(result);	
 	
 	return result;
 } 
@@ -97,7 +115,7 @@ Audio = function() {}
 Audio.regex = /(([^ ]+)(\.(mp3|wav|ogg)))/gim;
 
 Audio.toHtml = function(url) {
-	return "<audio controls src='" + url + "' class='messageImage'>Votre nagivateur ne supporte pas cette fonctionnalité.</audio>"; 
+	return "<audio controls src='" + url + "' class='audio'>Votre nagivateur ne supporte pas cette fonctionnalité.</audio>"; 
 }
 
 

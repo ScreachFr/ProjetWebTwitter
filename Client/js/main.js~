@@ -67,6 +67,8 @@ function init() {
 	if(Cookies.get(CRT_USER_CK) != undefined) {
 		setConnectedUserUI();
 		fillIndexComments();
+	} else {
+		window.location.href = LOGIN_PAGE;
 	}
 	
 }
