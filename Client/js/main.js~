@@ -118,7 +118,7 @@ function gotoIndex() {
 function getDebugComments() {
 	var result = {};
 	
-	for (var i = 0; i < 1; i++) {
+	for (var i = 0; i < 5; i++) {
 		result[i] = new Comment(i, DEBUG_M_AUTHOR, DEBUG_M_CONTENT, DEBUG_M_DATE, DEBUG_M_SCORE);
 	}
 	
