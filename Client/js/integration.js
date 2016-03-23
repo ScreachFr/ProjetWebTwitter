@@ -1,57 +1,35 @@
-const ARG_REGEX = /\&arg\&/ig;
-const ARG2_REGEX = /\&arg2\&/ig;
-const ARG = "&arg&";
-const ARG2 = "&arg2&";
 
 const PROTOC_REGEX = /((http|ftp|file|https):\/\/)/gim;
 
 const MAX_LINK_LENGTH = 25;
 
-var regex = [
-	/(((http|ftp|file|https):\/\/)[a-zA-Z0-9._/+@#/%&?=~_-]+(\.[a-zA-Z0-9._/+@#/&%?=~_-]+))/gim, //link with args
-];
 
-var replacer = [
-	"<a href='" + ARG + "' target='_blank'>" + ARG2 + "</a>",
-];
+Link = function() {}
 
+Link.regex = /(((http|ftp|file|https):\/\/)[a-zA-Z0-9._/+@#/%&?=~_-]+(\.[a-zA-Z0-9._/+@#/&%?=~_-]+))/gim;
 
-function Intregration(regex, substitute) {
-	this.regex = regex;
-	this.substitute = substitute;
-}
-
-Intregration.prototype.getHtml = function(data) {
+Link.toHtml = function(data) {
 	var result = "";
 	var formData = data;
 	
-	
-	
-	result = this.substitute;
-	
-	
-	result = result.replace(ARG_REGEX, data);
-	
 	formData = formData.replace(PROTOC_REGEX, "");
-	
 	if(data.length > MAX_LINK_LENGTH) {
 		formData = formData.substring(0, MAX_LINK_LENGTH) + "...";
 		
 	}
 	
-	result = result.replace(ARG2_REGEX, formData);
+	result += "<a href='";
+	
+	result += data;
+	
+	result += "' target='_blank'>";
+	
+	result += formData;
+	
+	result += "</a>";
 	
 	return result;
 }
-
-Intregration.prototype.regMatch = function(str) {
-	return str.search(this.regex);
-}
-
-
-Link = function() {}
-
-Link.regex
 
 Youtube = function() {}
 

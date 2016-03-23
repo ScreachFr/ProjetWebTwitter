@@ -24,5 +24,4 @@ public enum DataBaseErrors implements ServletError {
 		return error.getMessage();
 	}
 	
-	
 }

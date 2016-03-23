@@ -6,7 +6,9 @@ import java.security.NoSuchAlgorithmException;
 
 import org.json.simple.JSONObject;
 
+import database.DataBaseErrors;
 import services.errors.ServletError;
+import utils.Debug;
 
 public class ServicesTools {
 	//Common args name.
@@ -38,7 +40,7 @@ public class ServicesTools {
 		JSONObject json = new JSONObject();
 		json.put("errorCode", error.getCode());
 		json.put("errorMessage", error.getMessage());
-
+		
 		return json;
 	}
 

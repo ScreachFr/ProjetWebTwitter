@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
@@ -347,7 +348,7 @@ public class AuthenticationUtils {
 				} else
 					return ServicesTools.createJSONError(AuthErrors.BAD_LOGIN_OR_PASSWORD);
 			} catch (SQLException e) {
-				return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
+				return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR); 
 			} catch (CannotConnectToDatabaseException e) {
 				return ServicesTools.createJSONError(DataBaseErrors.CANNOT_CONNECT_TO_DATABASE);
 			} catch (QueryFailedException e) {
@@ -445,7 +446,7 @@ public class AuthenticationUtils {
 
 
 	public static void main(String[] args) {
-		System.out.println(login("debug", "password").toJSONString());
+		System.out.println(login("debufgg", "password").toJSONString());
 	}
 	
 }

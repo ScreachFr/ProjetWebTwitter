@@ -3,6 +3,42 @@
 <web-app> 
 	<display-name>TwitterProject_Dupas_Gaspard--Cilia</display-name> 
 	
+		<!-- Filters  -->
+		<filter>
+			<filter-name>CorsFilter</filter-name>
+			<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+			<init-param>
+				<param-name>cors.allowed.origins</param-name>
+				<param-value>*</param-value>
+			</init-param>
+			<init-param>
+				<param-name>cors.allowed.methods</param-name>
+				<param-value>GET,POST,HEAD,OPTIONS,PUT</param-value>
+			</init-param>
+			<init-param>
+				<param-name>cors.allowed.headers</param-name>
+				<param-value>Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
+			</init-param>
+			<init-param>
+				<param-name>cors.exposed.headers</param-name>
+				<param-value>Access-Control-Allow-Origin,Access-Control-Allow-Credentials</param-value>
+			</init-param>
+			<init-param>
+				<param-name>cors.support.credentials</param-name>
+				<param-value>true</param-value>
+			</init-param>
+			<init-param>
+				<param-name>cors.preflight.maxage</param-name>
+				<param-value>10</param-value>
+			</init-param>
+		</filter>
+		
+		<filter-mapping>
+			<filter-name>CorsFilter</filter-name>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+	
+	
 	<!-- Name binding -->
 		<!-- Authentication -->
 			<servlet> 
@@ -41,6 +77,12 @@
 			<servlet> 
 				<servlet-name>AddComment</servlet-name> 
 				<servlet-class>services.comments.AddComment</servlet-class> 
+			</servlet>
+			
+		<!-- Connection test -->
+			<servlet> 
+				<servlet-name>ConnectionTest</servlet-name> 
+				<servlet-class>services.test.ConnectionTest</servlet-class> 
 			</servlet>
 	
 	<!-- Template
@@ -94,11 +136,21 @@
 				<servlet-name>AddComment</servlet-name> 
 				<url-pattern>/comment/add</url-pattern> 
 			</servlet-mapping>
+			
+		<!-- Connection test -->
+			<servlet-mapping> 
+				<servlet-name>ConnectionTest</servlet-name> 
+				<url-pattern>/connection/test</url-pattern> 
+			</servlet-mapping>
+		
+		
 	<!-- Template
 	<servlet-mapping> 
 		<servlet-name>NAME</servlet-name> 
 		<url-pattern>URL</url-pattern> 
 	</servlet-mapping>
 	 -->
+	 
 	
+
 </web-app>
