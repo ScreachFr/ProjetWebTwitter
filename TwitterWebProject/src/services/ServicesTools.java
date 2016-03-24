@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.simple.JSONObject;
 
 import database.DataBaseErrors;
@@ -71,5 +73,10 @@ public class ServicesTools {
 		} catch (UnsupportedEncodingException e) {
 		}
 		return null;
+	}
+	
+	
+	public static void addCORSHeader(HttpServletResponse resp) {
+		resp.addHeader("Access-Control-Allow-Origin", "*");
 	}
 }

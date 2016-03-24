@@ -30,7 +30,7 @@ public class GetFollows extends HttpServlet{
 			answer = ServicesTools.createJSONError(ServerErrors.MISSING_ARGUMENT);
 		}
 		
-		
+		ServicesTools.addCORSHeader(resp);
 		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());

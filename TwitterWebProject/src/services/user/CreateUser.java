@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
+import services.ServicesTools;
+
 public class CreateUser extends HttpServlet {
 	private static final long serialVersionUID = -3138477533724703698L;
 
@@ -36,7 +38,7 @@ public class CreateUser extends HttpServlet {
 		firstName = req.getParameter(PARAM_FNAME);
 		lastName = req.getParameter(PARAM_LNAME);
 		
-		
+		ServicesTools.addCORSHeader(resp);
 		
 		answer = UserUtils.createUser(login, password, email, firstName, lastName);
 		

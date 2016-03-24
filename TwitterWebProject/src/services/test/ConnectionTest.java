@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 
+import services.ServicesTools;
+
 
 public class ConnectionTest extends HttpServlet {
 
@@ -18,6 +20,7 @@ public class ConnectionTest extends HttpServlet {
 			throws ServletException, IOException {
 		JSONObject answer;
 		
+		ServicesTools.addCORSHeader(resp);
 		
 		answer = new JSONObject();
 		

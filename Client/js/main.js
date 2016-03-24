@@ -159,7 +159,7 @@ function connect(login, password) {
 	var user;
 
 	var request = $.ajax({
-		url: "http://192.168.0.20:8080/gr3_dupas_gaspar/connection/test",
+		url: "http://83.152.71.120:8080/gr3_dupas_gaspar/connection/test",
 		type: 'post',
 		data: {LOGIN_LOGIN : login, LOGIN_PASSWORD : password},
 		dataType: "json",

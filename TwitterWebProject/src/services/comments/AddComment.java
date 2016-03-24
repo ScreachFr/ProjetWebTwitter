@@ -17,6 +17,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import services.ServicesTools;
+
 public class AddComment extends HttpServlet {
 
 	/**
@@ -37,6 +39,7 @@ public class AddComment extends HttpServlet {
 		userId = req.getParameter(PARAM_USERID);
 		text = req.getParameter(PARAM_TEXT);
 		
+		ServicesTools.addCORSHeader(resp);
 		
 		answer = CommentsUtils.addComment(userId, text);
 		

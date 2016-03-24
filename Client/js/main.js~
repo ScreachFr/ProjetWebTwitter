@@ -161,11 +161,6 @@ function connect(login, password) {
 	var request = $.ajax({
 		url: "http://192.168.0.20:8080/gr3_dupas_gaspar/connection/test",
 		type: 'post',
-		headers : {
-			'Access-Control-Allow-Origin' : 'http://192.168.0.20:8080/gr3_dupas_gaspar/connection/test',
-			'Access-Control-Allow-Methods' : 'GET, POST, PUT, DELETE, OPTIONS'
-			
-		},
 		data: {LOGIN_LOGIN : login, LOGIN_PASSWORD : password},
 		dataType: "json",
 		success: function(data) {

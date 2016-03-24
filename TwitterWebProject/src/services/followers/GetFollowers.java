@@ -33,7 +33,7 @@ private static final long serialVersionUID = 7428447883130442228L;
 			answer = ServicesTools.createJSONError(ServerErrors.MISSING_ARGUMENT);
 		}
 		
-		
+		ServicesTools.addCORSHeader(resp);
 		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());
