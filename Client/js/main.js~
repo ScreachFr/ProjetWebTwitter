@@ -1,7 +1,7 @@
 const MAIN_PAGE = "index.html";
 const LOGIN_PAGE = "login.html";
 
-const SERVER_URL = "http://192.168.0.20:8080/gr3_dupas_gaspar/";
+const SERVER_URL = "http://83.152.71.120:8080/gr3_dupas_gaspar/";
 
 //Alert const
 const ALERT_TITLE = ".alert-title";
@@ -159,13 +159,12 @@ function connect(login, password) {
 	var user;
 
 	var request = $.ajax({
-		url: "http://192.168.0.20:8080/gr3_dupas_gaspar/connection/test",
+		url: SERVER_URL + LOGIN_URL,
 		type: 'post',
 		data: {LOGIN_LOGIN : login, LOGIN_PASSWORD : password},
 		dataType: "json",
 		success: function(data) {
-			console.log("success");
-			console.log(data);
+			jsonString = data;
 		}, 
 		
 		error: function (xhr, ajaxOptions, thrownError) {

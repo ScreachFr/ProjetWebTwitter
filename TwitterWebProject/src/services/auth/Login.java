@@ -38,31 +38,7 @@ public class Login extends HttpServlet {
 			answer = ServicesTools.createJSONError(ServerErrors.MISSING_ARGUMENT);
 		}
 		
-		
-		
-		PrintWriter out = resp.getWriter();
-		out.write(answer.toJSONString());
-		resp.setContentType("text/plain");
-		
-	}
-	
-	// XXX/!\ Temporary 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		JSONObject answer;
-		String login;
-		String password;
-		
-		login = req.getParameter(PARAM_LOGIN);
-		password = req.getParameter(PARAM_PASSWORD);
-		
-		
-		if(!ServicesTools.nullChecker(login, password)) {
-			answer = AuthenticationUtils.login(login, password);
-		} else {
-			answer = ServicesTools.createJSONError(ServerErrors.MISSING_ARGUMENT);
-		}
+		ServicesTools.addCORSHeader(resp);
 		
 		
 		
