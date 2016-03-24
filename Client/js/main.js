@@ -1,7 +1,7 @@
 const MAIN_PAGE = "index.html";
 const LOGIN_PAGE = "login.html";
 
-const SERVER_URL = "http://83.152.71.120:8080/gr3_dupas_gaspar/";
+const SERVER_URL = " http://li328.lip6.fr:8280/gr3_dupas_gaspar/";
 
 //Alert const
 const ALERT_TITLE = ".alert-title";
@@ -11,6 +11,7 @@ const CONNEXION_ALERT = "#alert-connexion";
 
 const CONNEXION_ERROR_TITLE = "Echec de la connexion";
 const CONNEXION_ERROR_BAD_LOGIN_CONTENT = "Mauvais login et/ou mot de passe.";
+const SERVER_ERROR_CONTENT = "Erreur server.";
 
 const USER_LOGIN_ID = "#User-login";
 const USER_NAME_ID = "#User-name";
@@ -72,7 +73,7 @@ function init() {
 		var sp = window.location.href.split("/");
 	
 		if(sp[sp.length-1] != LOGIN_PAGE) {
-			window.location.href = LOGIN_PAGE;
+			//window.location.href = LOGIN_PAGE;
 		}
 	}
 	
@@ -133,9 +134,15 @@ function connexion(form) {
 	var result = connect(login, password);
 	
 	if(result !== true) {
-		defineAlert(CONNEXION_ALERT, CONNEXION_ERROR_TITLE,
-				 CONNEXION_ERROR_BAD_LOGIN_CONTENT, result.message + ", code : " + result.code);
-	
+		var reason;
+		if(result.errorCode == 1) {
+			reason = CONNEXION_ERROR_BAD_LOGIN_CONTENT;
+		} else {
+			reason = SERVER_ERROR_CONTENT;
+		}
+			defineAlert(CONNEXION_ALERT, CONNEXION_ERROR_TITLE,
+					 reason, result.message + ", code : " + result.code);
+		
 		$(CONNEXION_ALERT).show();
 		
 	} 
@@ -157,14 +164,16 @@ function connect(login, password) {
 	//var jsonString = DEBUG_JSON_CONNECTION;
 	var jsonString = DEBUG_JSON_CONNECTION_KO;
 	var user;
-
+	var j;
 	var request = $.ajax({
 		url: SERVER_URL + LOGIN_URL,
 		type: 'post',
-		data: {LOGIN_LOGIN : login, LOGIN_PASSWORD : password},
+		data: LOGIN_LOGIN + "=" + login + "&" + LOGIN_PASSWORD + "=" + password,
 		dataType: "json",
+		async: false,
 		success: function(data) {
-			jsonString = data;
+			j = data;
+			console.log("success");
 		}, 
 		
 		error: function (xhr, ajaxOptions, thrownError) {
@@ -173,9 +182,11 @@ function connect(login, password) {
 	
 	});
 
-	console.log(jsonString);
+	console.log(j);
 	
-	var j = $.parseJSON(jsonString);
+	if(j == undefined)
+		j = $.parseJSON(jsonString);
+		
 	
 	if (j.errorMessage != undefined) {
 		return new ServerError(j.errorMessage, j.errorCode);

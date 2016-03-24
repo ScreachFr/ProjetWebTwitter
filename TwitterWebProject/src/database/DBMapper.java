@@ -28,10 +28,14 @@ public class DBMapper {
 	public final static String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss"; //mysql
 	public final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 	
-	
-
+	public final static String JDBC_CLASS = "com.mysql.jdbc.Driver";
 
 	public static Connection getMySQLConnection() throws SQLException {
+		try {
+			Class.forName(JDBC_CLASS);
+		} catch (ClassNotFoundException e) {
+			Debug.display_stack(e);
+		}
 		
 		
 		return DriverManager.getConnection("jdbc:mysql://" + DBSettings.HOST + ":" + DBSettings.PORT + "/" + DBSettings.DATABASE,
@@ -49,6 +53,7 @@ public class DBMapper {
 		try {
 			database = getMySQLConnection();
 		} catch (SQLException e1) {
+			Debug.display_stack(e1);
 			throw new CannotConnectToDatabaseException();
 		}
 
@@ -70,7 +75,7 @@ public class DBMapper {
 			return result;
 
 		} catch (SQLException e) {
-			Debug.display_stack(e);
+			
 			throw new QueryFailedException();
 		}
 

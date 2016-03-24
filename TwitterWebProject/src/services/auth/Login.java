@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import services.ServicesTools;
 import services.errors.ServerErrors;
 import services.followers.FollowerUtils;
+import utils.Debug;
 
 
 public class Login extends HttpServlet {
@@ -40,7 +41,7 @@ public class Login extends HttpServlet {
 		
 		ServicesTools.addCORSHeader(resp);
 		
-		
+		answer.put("debug", Debug.getStack());
 		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());

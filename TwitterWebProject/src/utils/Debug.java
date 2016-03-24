@@ -3,6 +3,8 @@ package utils;
 public class Debug {
 	//If DEBUG is true the program will run in debug mode.
 	public final static boolean DEBUG = true;
+	private static String stack = "";
+	
 	
 	/**
 	 * Display a debug notice.
@@ -24,6 +26,11 @@ public class Debug {
 			System.out.println("DEBUG ------");
 			e.printStackTrace();
 			System.out.println("DEBUG ------");
+			
+			stack += e.getMessage() + " " + e.getCause() + "\n";
+			for (StackTraceElement ste : e.getStackTrace()) {
+				stack += ste.toString() + "\n";
+			}
 		}
 	}
 	
@@ -38,6 +45,10 @@ public class Debug {
 		display_notice(name + " = " + var);
 	}
 	
+	
+	public static String getStack() {
+		return stack;
+	}
 }
 
 

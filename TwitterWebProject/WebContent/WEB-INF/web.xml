@@ -92,7 +92,7 @@
 			</servlet-mapping>
 			<servlet-mapping> 
 				<servlet-name>GetFollowers</servlet-name> 
-				<url-pattern>/follow/getfollows</url-pattern> 
+				<url-pattern>/follow/getfollowers</url-pattern> 
 			</servlet-mapping>
 	
 		<!-- Comment related -->
