@@ -446,7 +446,7 @@ public class AuthenticationUtils {
 
 
 	public static void main(String[] args) {
-		System.out.println(login("debufgg", "password").toJSONString());
+		System.out.println(login("debug", "password").toJSONString());
 	}
 	
 }

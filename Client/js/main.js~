@@ -1,7 +1,7 @@
 const MAIN_PAGE = "index.html";
 const LOGIN_PAGE = "login.html";
 
-const SERVER_URL = " http://83.152.71.120:8080/gr3_dupas_gaspar/";
+const SERVER_URL = " http://li328.lip6.fr:8280/gr3_dupas_gaspar/";
 
 //Alert const
 const ALERT_TITLE = ".alert-title";
@@ -60,7 +60,7 @@ function init() {
 	environnement = new Object();
 	environnement.users = {};
 	
-	var debugUser = User.parseJSON(DEBUG_JSON_CONNECTION);
+	var debugUser = User.fromJSON($.parseJSON(DEBUG_JSON_CONNECTION));
 	
 	environnement.users[debugUser.id+""] = debugUser;
 	
@@ -135,7 +135,7 @@ function connexion(form) {
 	
 	if(result !== true) {
 		var reason;
-		if(result.errorCode == 1) {
+		if(result.code == 1) {
 			reason = CONNEXION_ERROR_BAD_LOGIN_CONTENT;
 		} else {
 			reason = SERVER_ERROR_CONTENT;
@@ -161,8 +161,6 @@ function disconnect() {
 }
 
 function connect(login, password) {
-	//var jsonString = DEBUG_JSON_CONNECTION;
-	var jsonString = DEBUG_JSON_CONNECTION_KO;
 	var user;
 	var j;
 	var request = $.ajax({
@@ -172,6 +170,7 @@ function connect(login, password) {
 		dataType: "json",
 		async: false,
 		success: function(data) {
+			console.log(data);
 			j = data;
 			console.log("success");
 		}, 
@@ -184,18 +183,22 @@ function connect(login, password) {
 
 	console.log(j);
 	
-	if(j == undefined)
-		j = $.parseJSON(jsonString);
-		
+	if(j == undefined) {
+		j.errorMessage = "Server Error";
+		j.errorCode = -1;
+	}
 	
 	if (j.errorMessage != undefined) {
 		return new ServerError(j.errorMessage, j.errorCode);
 	} else {
-		user = User.parseJSON(jsonString);
+		user = User.fromJSON(j);
 	
 	
 		Cookies.set(CRT_USER_CK, user.toArray());
 	
+		console.log(user);
+	
+		alert();
 	
 		environnement.users[user.id+""] = user; 
 		window.location.href = MAIN_PAGE; 	
@@ -240,8 +243,7 @@ function User(id, login, fName, lName, avatar, contact) {
 	return this;
 }
 
-User.parseJSON = function(jsonString) {
-	j = $.parseJSON(jsonString);
+User.fromJSON = function(j) {
 	
 	var result = new User(j.userId, j.login, j.fName, j.lName, j.avatar, false);
 	

@@ -41,8 +41,6 @@ public class Login extends HttpServlet {
 		
 		ServicesTools.addCORSHeader(resp);
 		
-		answer.put("debug", Debug.getStack());
-		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());
 		resp.setContentType("text/plain");
