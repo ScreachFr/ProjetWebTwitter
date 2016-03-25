@@ -35,8 +35,22 @@ const LOGIN_PASSWORD = "password";
 
 const DEFAULT_AVATAR_SIZE = 150;
 
+const DISCONNET_URL = "user/logout";
+
+const GETUSER_URL = "user/get";
+const GETUSER_ID = "id";
+const GETUSER_YOUR_ID = "yourid";
+
+const REGISTER_URL = "user/create";
+
+const REGISTER_LOGIN = "login";
+const REGISTER_PASSWORD = "password";
+const REGISTER_FNAME = "fname";
+const REGISTER_LNAME = "lname";
+const REGISTER_MAIL = "email";
+
 //Debug user
-const DEBUG_ID = 1;
+const DEBUG_ID = 5;
 const DEBUG_LOGIN = "debug";
 const DEBUG_PASSWORD = "password";
 const DEBUG_FNAME = "Alan";
@@ -49,7 +63,7 @@ const DEBUG_JSON_CONNECTION_KO = '{"errorMessage":"Bad login or password","error
 //Debug comment
 //function Comment(id, author, content, date, score) {
 const DEBUG_M_ID = 1;
-const DEBUG_M_AUTHOR = 5;
+const DEBUG_M_AUTHOR = 6;
 const DEBUG_M_CONTENT = "Message de debug. https://open.spotify.com/artist/63MQldklfxkjYDoUE4Tppz Lorem ipsum dolor sit consectetur elit. Donec a diam lectus.";
 const DEBUG_M_DATE = "00-00-00 00:00:00";
 const DEBUG_M_SCORE = 0;
@@ -63,40 +77,43 @@ function init() {
 	var debugUser = User.fromJSON($.parseJSON(DEBUG_JSON_CONNECTION));
 	
 	environnement.users[debugUser.id+""] = debugUser;
-	
-	
+	environnement.errorUser = new User(-1, "Error", "Unknown", "User" 
+		, "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm"
+		, false);
 	
 	if(Cookies.get(CRT_USER_CK) !== undefined) {
+		environnement.crtUser = User.fromJSON(Cookies.getJSON(CRT_USER_CK));
+		
 		setConnectedUserUI();
 		fillIndexComments();
 	} else {
 		var sp = window.location.href.split("/");
 	
 		if(sp[sp.length-1] != LOGIN_PAGE) {
-			//window.location.href = LOGIN_PAGE;
+			window.location.href = LOGIN_PAGE;
 		}
 	}
 	
 }
 
 function setConnectedUserUI() {
-	var user = Cookies.getJSON(CRT_USER_CK);
+	var user = environnement.crtUser;
 	
-		
-	var login = user["login"];
-	var name = user["fName"] + " " + user["lName"];
+	var login = user.login;
+	var name = user.fName + " " + user.lName;
+	
 	
 	
 	$(USER_LOGIN_ID).first().text("@" + login);
 	$(USER_NAME_ID).first().text(name);
 	
 	
-	(user["nbFollowers"] != undefined) ? $(USER_FOLLOWERS_ID).first().text(user["nbFollowers"]+"") : $(USER_FOLLOWERS_ID).first().text("0");
-	(user["nbFollows"] != undefined) ? $(USER_FOLLOWS_ID).first().text(user["nbFollows"]+"") : $(USER_FOLLOWS_ID).first().text("0");	
-	(user["nbComments"] != undefined) ? $(USER_COMMENTS_ID).first().text(user["nbComments"]+"") : $(USER_COMMENTS_ID).first().text("0");
+	(user.nbFollowers != undefined) ? $(USER_FOLLOWERS_ID).first().text(user.nbFollowers+"") : $(USER_FOLLOWERS_ID).first().text("0");
+	(user.nbFollows != undefined) ? $(USER_FOLLOWS_ID).first().text(user.nbFollows+"") : $(USER_FOLLOWS_ID).first().text("0");	
+	(user.nbComments != undefined) ? $(USER_COMMENTS_ID).first().text(user.nbComments+"") : $(USER_COMMENTS_ID).first().text("0");
 	
 	$(AVATAR_MAIN).each(function() {
-		$(this).attr("src", addAvatarSize(user["avatar"], DEFAULT_AVATAR_SIZE));
+		$(this).attr("src", addAvatarSize(user.avatar, DEFAULT_AVATAR_SIZE));
 	});
 
 }
@@ -133,31 +150,32 @@ function connexion(form) {
 	
 	var result = connect(login, password);
 	
-	if(result !== true) {
-		var reason;
-		if(result.code == 1) {
-			reason = CONNEXION_ERROR_BAD_LOGIN_CONTENT;
-		} else {
-			reason = SERVER_ERROR_CONTENT;
-		}
-			defineAlert(CONNEXION_ALERT, CONNEXION_ERROR_TITLE,
-					 reason, result.message + ", code : " + result.code);
-		
-		$(CONNEXION_ALERT).show();
-		
-	} 
-			
-	
-	
-	
 }
 
 function disconnect() {
-	//TODO send disconnection request to the server
 	
 	Cookies.remove(CRT_USER_CK);
 	
-	window.location.href = LOGIN_PAGE;
+	
+	var request = $.ajax({
+		url: SERVER_URL + DISCONNET_URL,
+		type: 'post',
+		data: LOGIN_LOGIN + "=" + login,
+		dataType: "json",
+		async: false,
+		success: function(data) {
+		}, 
+		
+		error: function (xhr, ajaxOptions, thrownError) {
+      	}
+	
+	});
+	
+
+	
+	window.location.href = LOGIN_PAGE;	
+	
+	return false;
 }
 
 function connect(login, password) {
@@ -168,63 +186,58 @@ function connect(login, password) {
 		type: 'post',
 		data: LOGIN_LOGIN + "=" + login + "&" + LOGIN_PASSWORD + "=" + password,
 		dataType: "json",
-		async: false,
 		success: function(data) {
-			console.log(data);
 			j = data;
-			console.log("success");
+
+			if (j.errorMessage != undefined) {
+				var reason;
+				var result = new ServerError(j.errorMessage, j.errorCode);
+				
+				if(result.code == 1) {
+					reason = CONNEXION_ERROR_BAD_LOGIN_CONTENT;
+				} else {
+					reason = SERVER_ERROR_CONTENT;
+				}
+					defineAlert(CONNEXION_ALERT, CONNEXION_ERROR_TITLE,
+							 reason, result.message + ", code : " + result.code);
+		
+				$(CONNEXION_ALERT).show();
+		
+
+			} else {
+				user = User.fromJSON(j);
+	
+	
+				Cookies.set(CRT_USER_CK, user.toArray());
+				
+	
+				environnement.users[user.id+""] = user; 
+				environnement.crtUser = user;
+				window.location.href = MAIN_PAGE; 	
+		
+				return true;
+			}
+
 		}, 
 		
 		error: function (xhr, ajaxOptions, thrownError) {
-			console.log("error");
+			result = new ServerError("ServerError", -1);
+      		
+      		var reason = SERVER_ERROR_CONTENT;
+      		
+      		defineAlert(CONNEXION_ALERT, CONNEXION_ERROR_TITLE,
+							 reason, result.message + ", code : " + result.code);
+		
+			$(CONNEXION_ALERT).show();
+      	
       	}
 	
 	});
 
-	console.log(j);
-	
-	if(j == undefined) {
-		j.errorMessage = "Server Error";
-		j.errorCode = -1;
-	}
-	
-	if (j.errorMessage != undefined) {
-		return new ServerError(j.errorMessage, j.errorCode);
-	} else {
-		user = User.fromJSON(j);
-	
-	
-		Cookies.set(CRT_USER_CK, user.toArray());
-	
-		console.log(user);
-	
-		alert();
-	
-		environnement.users[user.id+""] = user; 
-		window.location.href = MAIN_PAGE; 	
-		
-		return true;
-	}
-	
-	
-	
 }
 
 
-function defineAlert(alertId, alertTitle, alertContent, alertServerError) {
-	$(alertId + " " + ALERT_TITLE).first().text(alertTitle);
-	
-	if(alertServerError != undefined) {
-		$(alertId + " " + ALERT_CONTENT).first().text(alertContent + " (" + alertServerError + ")");
-	} else {
-		$(alertId + " " + ALERT_CONTENT).first().text(alertContent);
-	}
-}
 
-
-function hideAlert(element) {
-	$(element).css("display", "none");
-}
 
 
 function User(id, login, fName, lName, avatar, contact) {
@@ -253,8 +266,8 @@ User.fromJSON = function(j) {
 	if(j.nbFollowers != undefined)
 		result.nbFollowers = j.nbFollowers;
 	
-	if(j.nbMessages != undefined)
-		result.nbComments = j.nbMessages;
+	if(j.nbComments != undefined)
+		result.nbComments = j.nbComments;
 
 	
 
@@ -271,7 +284,7 @@ User.prototype.modifStatus = function() {
 }
 
 User.prototype.toArray = function() {
-	var result = {"id":this.id, "login":this.login, "fName":this.fName,
+	var result = {"userId":this.id, "login":this.login, "fName":this.fName,
 					 "lName":this.lName, "avatar": this.avatar, "contact":this.contact};
 					 
 	if(this.nbFollows != undefined)
@@ -309,8 +322,32 @@ Comment.prototype.getHtml = function() {
 	var media = "";
 	var auth = environnement.users[this.author+""];
 	
+	
 	if(auth == undefined) {
-		//TODO Get author here
+		var authorId = this.author;
+		var request = $.ajax({
+			url: SERVER_URL + GETUSER_URL,
+			type: 'post',
+			data:  GETUSER_ID + "=" + authorId + "&" + GETUSER_YOUR_ID + "=" + environnement.crtUser.id,
+			dataType: "json",
+			async: false,
+			success: function(data) {
+				
+				if(data.errorMessage == undefined) {
+					auth = User.fromJSON(data);
+				} else {
+					auth = environnement.errorUser;
+				}
+				
+				environnement.users[data.id+""] = auth;				
+			}, 
+		
+			error: function (xhr, ajaxOptions, thrownError) {
+				auth = environnement.errorUser;
+		  	}
+	
+		});
+
 	}
 	
 	
@@ -341,7 +378,7 @@ Comment.prototype.getHtml = function() {
 	}
 
 	
-	result += '<div class="Message">\n';
+	result += '<div class="Message ">\n';
 	result += '<img src="' + auth.avatar + '" class="MsgAvatar thumbnail" />\n';
 	result += '<div class="MsgMain">\n';
 	result += '<p>\n';
@@ -429,12 +466,116 @@ function ServerError(message, code) {
 
 
 
-
-
-
-
-
+function register(element) {
+	var lName = element.lName.value;
+	var fName = element.fName.value;
+	var mail = element.mail.value;
+	var confMail = element.confMail.value;
+	var login = element.login.value;
+	var pwd = element.password.value;
+	var confpwd = element.confPassword.value;
 	
+	var fail = false;
+	
+	
+	if(mail != confMail) {
+		$("#mailConf").addClass("has-error");
+		fail = true;
+	}
+	
+	if(pwd != confpwd) {
+		$("#passwordConf").addClass("has-error");
+		fail = true;
+	}
+	
+	if (fail) {
+		alertFail("Echec", "Erreur dans le formulaire d'inscription.");
+		return;
+	}
+	
+	
+	var request = $.ajax({
+		url: SERVER_URL + REGISTER_URL,
+		type: 'post',
+		data:  REGISTER_LOGIN + "=" + login + 
+			"&" + REGISTER_PASSWORD + "=" + pwd + 
+			"&" + REGISTER_MAIL + "=" + mail + 
+			"&" + REGISTER_FNAME + "=" + fName +
+			"&" + REGISTER_LNAME + "=" + lName,
+		dataType: "json",
+		success: function(data) {
+			if(data.errorMessage == undefined) {
+				alertSuccess("Succes", "Vous avez été enregisté avec succes.");
+				
+				connect(login, pwd);				
+			} else if (data.errorCode == 1) {
+				alertFail("Echec", "Un autre compte dispose du même login/mail. ");
+				
+				$("#login").addClass("has-error");
+				$("#mail").addClass("has-error");
+				
+			} else {
+				alertFail("Echec", "Le server a renvoyé une erreur."
+					, new ServerError(data.errorMessage, data.errorCode));
+			}			
+		}, 
+	
+		error: function (xhr, ajaxOptions, thrownError) {
+	  		alertFail("Erreur", "Erreur de communication avec le server.");
+	  	}
+	
+	});
+	
+	
+}
+
+function alertSuccess(title, content) {
+	$("#alert-success .alert-title").first().text(title);
+	$("#alert-success .alert-content").first().text(content);
+	
+	$("#alert-success").show();
+}
+
+function alertFail(title, content, serverError) {
+	$("#alert-fail .alert-title").first().text(title);
+	$("#alert-fail .alert-content").first().text(content);
+	
+	if(serverError != undefined) {
+		$("#alert-fail .alert-content").first().text(content + " (" + serverError.message + " : " + serverError.code + ")");
+	} else {
+		$("#alert-fail .alert-content").first().text(content);
+	}
+	
+	$("#alert-fail").show();
+}
+
+function defineAlert(alertId, alertTitle, alertContent, alertServerError) {
+	$(alertId + " " + ALERT_TITLE).first().text(alertTitle);
+	
+	if(alertServerError != undefined) {
+		$(alertId + " " + ALERT_CONTENT).first().text(alertContent + " (" + alertServerError + ")");
+	} else {
+		$(alertId + " " + ALERT_CONTENT).first().text(alertContent);
+	}
+}
+
+
+function hideAlert(element) {
+	$(element).css("display", "none");
+}
+
+
+function removeError(elem) {
+	$(elem).removeClass("has-error");
+}
+
+function setLoading(elem) {
+	$(elem).html();
+}
+
+function setText(elem) {
+
+}
 
 
 

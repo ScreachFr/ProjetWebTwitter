@@ -48,6 +48,12 @@
 				<servlet-name>ConnectionTest</servlet-name> 
 				<servlet-class>services.test.ConnectionTest</servlet-class> 
 			</servlet>
+
+		<!-- User information related -->
+			<servlet> 
+				<servlet-name>GetUser</servlet-name> 
+				<servlet-class>services.user.GetUser</servlet-class> 
+			</servlet>
 	
 	<!-- Template
 	
@@ -105,6 +111,12 @@
 			<servlet-mapping> 
 				<servlet-name>ConnectionTest</servlet-name> 
 				<url-pattern>/connection/test</url-pattern> 
+			</servlet-mapping>
+	
+		<!-- User information related -->	
+			<servlet-mapping> 
+				<servlet-name>GetUser</servlet-name> 
+				<url-pattern>/user/get</url-pattern> 
 			</servlet-mapping>
 		
 		

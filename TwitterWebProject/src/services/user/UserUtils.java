@@ -12,6 +12,7 @@ import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 import services.ServicesTools;
 import services.errors.ServerErrors;
+import services.followers.FollowerUtils;
 
 public class UserUtils {
 	private final static String INSERT_USER_QUERY 				= "INSERT INTO users (idusers, login, password, email, prenom, nom) VALUES (DEFAULT, ?, SHA2(?, 256), ?, ?, ?);";
@@ -138,4 +139,43 @@ public class UserUtils {
 		return result;
 	}
 	
+	/**
+	 * Get an user and convert it to JSONObject.
+	 * @param userId
+	 * 	User's id.
+	 * @param askingUserId
+	 * 	Id of the user who makes request. Will define contact. If you don't want to check this, put that value to -1.
+	 * @return
+	 * 	JSON answer.
+	 * XXX Test : ok
+	 */
+	public static JSONObject getUserToJSON(int userId, int askingUserId) {
+		JSONObject result;
+		User user;
+		try {
+			user = getUser(userId);
+			
+			if(user == null)
+				return ServicesTools.createJSONError(UserErrors.UNKNOWN_USER);
+			
+			if(askingUserId > 0) {
+				user.setContact(FollowerUtils.isUserFollowing(askingUserId, userId));
+			}
+		
+			result = user.toJSON();
+		}  catch (SQLException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
+		} catch (CannotConnectToDatabaseException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.CANNOT_CONNECT_TO_DATABASE);
+		} catch (QueryFailedException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.QUERY_FAILED);
+		}
+		return result;
+	}
+	
+	
+	public static void main(String[] args) {
+		System.out.println(getUserToJSON(4, 5));
+		System.out.println(FollowerUtils.getUsersFollows(5));
+	}
 }

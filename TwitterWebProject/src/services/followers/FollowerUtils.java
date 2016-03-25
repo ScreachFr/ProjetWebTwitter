@@ -188,7 +188,7 @@ public class FollowerUtils {
 	 * @throws QueryFailedException
 	 * XXX TEST : ok
 	 */
-	private static boolean isUserFollowing(int idUser1, int idUser2) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
+	public static boolean isUserFollowing(int idUser1, int idUser2) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
 		ResultSet result = DBMapper.executeQuery(GET_FOLLOW_BY_COUPLE_ID_QUERY, QueryType.SELECT, idUser1, idUser2);
 		boolean found = result.next();
 		result.close();

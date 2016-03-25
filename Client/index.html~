@@ -25,7 +25,9 @@
 		
 		<meta charset="utf-8" />
 		
-		<title>Site title goes here!</title>
+		<title>Gazouilleur</title>
+		<link rel="icon" type="img/png" href="img/logo_sq.png">
+		
 	</head>
 	<!--END HEAD-->
 	
@@ -61,12 +63,7 @@
 			</div>
 		</header>
 		
-		
-		
-		<!-- MAIN -->
-		<main>
-			<div class="container">
-				<!-- ASIDE -->
+		<!-- ASIDE -->
 				<aside class="panel">
 					<div class="panel-heading aside-heading">
 						<img src="" class="thumbnail avatar-main"/>
@@ -100,21 +97,20 @@
 						</div>
 					</div>
 				</aside>
+		
+		<!-- MAIN -->
+		<main>
+			<div class="container container-main">
 			
-			
-				<div class="col-md-9 message-container">			
+				<div class="col-md-12 message-container">			
 				
 					<div class="write-message">
-						<img src="img/100x100PH.png" class="MsgAvatar thumbnail avatar-main" />
+						<img src="" class="thumbnail avatar-main" />
 						<div class="write-message-content">
-							<div class="form-group">
-								<div class="input-group">
-									<input class="form-control" type="text" placeholder="Quoi de neuf ?">
-									<span class="input-group-btn">
-										<button type="submit" class="btn"><span class="fui-bubble"></span></button>
-									</span>
-								</div>
-							</div>
+							<form onsubmit="return false;">
+								<input class="form-control" type="text" placeholder="Quoi de neuf ?">	
+								<button type="submit"  class="btn-primary" ><span class="fui-bubble"></span></button>
+							</form>
 						</div>
 					</div>
 
