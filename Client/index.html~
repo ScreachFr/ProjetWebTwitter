@@ -64,39 +64,41 @@
 		</header>
 		
 		<!-- ASIDE -->
-				<aside class="panel">
-					<div class="panel-heading aside-heading">
-						<img src="" class="thumbnail avatar-main"/>
-						<h5 id="User-name">Prenom NOM</h5>
-						<p id="User-login">@login</p>
-					</div>
-					<div class="panel-body aside-body">
-						<div class="stat">
-							<span class="stat-name">
-								Comments
-							</span>
-							<br />
-							<span class="stat-value" id="Comments-v">
-							</span>
-						</div>
-						<div class="stat">
-							<span class="stat-name">
-								Follows
-							</span>
-							<br />
-							<span class="stat-value" id="Follows-v">
-							</span>
-						</div>
-						<div class="stat">
-							<span class="stat-name">
-								Followers
-							</span>
-							<br />
-							<span class="stat-value" id="Followers-v">
-							</span>
-						</div>
-					</div>
-				</aside>
+		<aside class="panel">
+			<div class="panel-heading aside-heading">
+				<img src="" class="thumbnail avatar-main"/>
+				<h5 id="User-name">Prenom NOM</h5>
+				<p id="User-login">@login</p>
+			</div>
+			<div class="panel-body aside-body">
+				<div class="stat">
+					<span class="stat-name">
+						Comments
+					</span>
+					<br />
+					<span class="stat-value" id="Comments-v">
+					</span>
+				</div>
+				<div class="stat">
+					<span class="stat-name">
+						Follows
+					</span>
+					<br />
+					<span class="stat-value" id="Follows-v">
+					</span>
+				</div>
+				<div class="stat">
+					<span class="stat-name">
+						Followers
+					</span>
+					<br />
+					<span class="stat-value" id="Followers-v">
+					</span>
+				</div>
+			</div>
+		</aside>
+		
+
 		
 		<!-- MAIN -->
 		<main>
@@ -109,7 +111,7 @@
 						<div class="write-message-content">
 							<form onsubmit="return false;">
 								<input class="form-control" type="text" placeholder="Quoi de neuf ?">	
-								<button type="submit"  class="btn-primary" ><span class="fui-bubble"></span></button>
+								<button type="submit"  class="btn btn-primary" ><span class="fui-bubble"></span></button>
 							</form>
 						</div>
 					</div>
@@ -119,10 +121,15 @@
 				
 				
 				</div>
+				<div class="main-footer">
+					<p>&nbsp;</p>
+				</div>
 			</div>
 		</main>
 		
-		
+		<footer class="col-md-12">
+			Par <a href="mailto:a.gaspardcilia@gmail.com">Alexandre GC</a> 2016. Ce site internet est totalement original, toute ressemblance fortuite avec par exemple <a href="www.twitter.com">Twitter</a> est pure coĩncidence. Ma mauvaise foi n'engage que moi.
+		</footer>	
 		
 	</body>
 	<!--END BODY-->

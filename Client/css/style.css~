@@ -1,5 +1,6 @@
 body {
 	background-color : #ECECEC;
+	min-height : 100%;
 }
 
 .login-body {
@@ -54,7 +55,7 @@ nav {
 	display : block;
 	border-radius : 4px 4px 0 0;
 	background : #bdc3c7;
-	border: solid 1px #95a5a6;
+	border: solid 1px 1px 0 1px #95a5a6;
 }
 
 .write-message img {
@@ -119,6 +120,10 @@ nav {
 	color : #a8a8a8;
 }
 
+.MsgDate {
+ 	color : #a8a8a8;
+}
+
 .message-container {
 	padding : 0;
 	display : block;
@@ -127,7 +132,7 @@ nav {
 
 aside {
 	margin-top : 15px;
-	margin-left : 6%;	
+	margin-left : 5.5%;	
 	width : 13%;
 	border : 1px solid #27ae60 !important;
 	float : left;
@@ -169,7 +174,7 @@ aside h5 {
 }
 
 .youtube {
-	width : 100%;
+	width : 85%;
 	height : 400px;
 }
 
@@ -179,13 +184,17 @@ aside h5 {
 	margin : auto;
 }
 
-.image-media {
-	margin : auto;
+
+.image-media {	
+	border-radius : 4px;
+	display : block;
+	cursor : pointer;
 }
+
 
 .video {
 	margin : auto;
-	width : 100%;
+	border-radius : 4px;
 }
 
 .audio {
@@ -199,6 +208,7 @@ aside h5 {
 	margin-left : auto;
 	margin-right : auto;
 	margin-bottom : 15px;
+	
 }
 
 
@@ -209,10 +219,30 @@ aside h5 {
 	margin-top : 15px;
 }
 
+.main-footer {
+	display : block;
+	border-radius : 0px 0px 4px 4px;
+	background : #bdc3c7;
+	border: solid 0 1px 1px 1px #95a5a6;
+}
 
 
+footer {
+	padding : 5px 0 5px 0;
+	text-align : center;
+	background : #FFF;
+}
 
+.max-width {
+	width : 250px;
+}
 
+.max-height {
+	height : 250px;
+}
+
+body {position: relative;}
+footer {position: absolute; bottom: 0; left: 0; right: 0}
 
 
 

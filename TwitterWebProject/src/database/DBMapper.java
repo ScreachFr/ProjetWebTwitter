@@ -112,7 +112,9 @@ public class DBMapper {
 		SELECT, UPDATE, DELETE, INSERT;
 	}
 
-
+	public static void main(String[] args) {
+		System.out.println(getTimeNow());
+	}
 
 }
 

@@ -1,3 +1,5 @@
+const MAX_WIDTH = 250;
+const MAX_HEIGHT = 250;
 
 const PROTOC_REGEX = /((http|ftp|file|https):\/\/)/gim;
 
@@ -27,6 +29,8 @@ Link.toHtml = function(data) {
 	result += formData;
 	
 	result += "</a>";
+	
+	return result;
 }
 
 Youtube = function() {}
@@ -71,9 +75,9 @@ Image.regex = /(((http|ftp|file|https):\/\/)[a-zA-Z0-9._/+@#/%&?=~_-]+(\.[a-zA-Z
 Image.toHtml = function(url) {
 	var result = "";
 	
-	result += "<a href='" + ARG + "' target='_blank'><img class='image-media' src='";
+	result += "<img onClick='extend(this)' class='image-media auto-resize' src='";
 	result += url;
-	result += "' alt='image'/></a>";
+	result += "' alt='image'/>";
 
 	return result;
 }
@@ -83,7 +87,7 @@ Video = function() {}
 Video.regex = /(([^ ]+)(\.(webm|mp4|ogv)))/gim;
 
 Video.toHtml = function(url) {
-	return "<video controls src='" + url + "' class='video'>Votre nagivateur ne supporte pas cette fonctionnalité.</video>";
+	return "<video controls src='" + url + "' class='video auto-resize'>Votre nagivateur ne supporte pas cette fonctionnalité.</video>";
 }
 
 Audio = function() {}
@@ -96,7 +100,31 @@ Audio.toHtml = function(url) {
 
 
 
+function setDefaultSize(elem) {
+	var element = $(elem);
+	
+	if(element.width() > MAX_WIDTH || element.height() > MAX_HEIGHT) {
+		if (element.width() >= element.height()) {
+			element.addClass("max-width");
+		} else {
+			element.addClass("max-height");
+		}
+	}
+		
+}
 
+function extend(elem) {
+	if($(elem).hasClass("extend")) {
+		setDefaultSize(elem);
+		$(elem).removeClass("extend");
+	} else {
+		$(elem).removeClass("max-height");
+		$(elem).removeClass("max-width");
+
+		$(elem).addClass("extend");
+	}
+	
+}
 
 
 

@@ -24,7 +24,7 @@ const COMMENTS_MAIN_CONTAINER = "#Messages";
 const AVATAR_MAIN = ".avatar-main";
 
 const CRT_USER_CK = "crtUser";
-
+const KEY_CK = "key";
 
 //Server args
 const CONNECTION_TEST_URL = "connection/test";
@@ -49,34 +49,14 @@ const REGISTER_FNAME = "fname";
 const REGISTER_LNAME = "lname";
 const REGISTER_MAIL = "email";
 
-//Debug user
-const DEBUG_ID = 5;
-const DEBUG_LOGIN = "debug";
-const DEBUG_PASSWORD = "password";
-const DEBUG_FNAME = "Alan";
-const DEBUG_LNAME = "Turing";
-const DEBUG_CONTACT = false;
 
-const DEBUG_JSON_CONNECTION = '{"nbMessages":8,"lName":"Turing","fName":"Allan","nbFollows":1,"nbFollowers":0,"avatar":"https:\/\/en.gravatar.com\/avatar\/8f1373a6019b6427d12726137fc2935e.jpg?d=mm","login":"debug","userId":5,"key":"91a5c0dc422d4f4b9f01a168e766d91f","email":"alexandregaspardcilia@hotmail.fr"}\n';
-const DEBUG_JSON_CONNECTION_KO = '{"errorMessage":"Bad login or password","errorCode":1}';
-
-//Debug comment
-//function Comment(id, author, content, date, score) {
-const DEBUG_M_ID = 1;
-const DEBUG_M_AUTHOR = 6;
-const DEBUG_M_CONTENT = "Message de debug. https://open.spotify.com/artist/63MQldklfxkjYDoUE4Tppz Lorem ipsum dolor sit consectetur elit. Donec a diam lectus.";
-const DEBUG_M_DATE = "00-00-00 00:00:00";
-const DEBUG_M_SCORE = 0;
-
+const DEBUG_JSON_COMMENTS = '{"comments":[{"date":"2016-03-28 15:08:13","author_login":"Screach","userid":6,"content":"Message basique de test."},{"date":"2016-03-28 15:08:15","author_login":"debug","userid":5,"content":"Message basique de test avec musique spotify. https:\/\/open.spotify.com\/track\/1BUxKj2M9PDgm7Ie8YaVdb"},{"date":"2016-03-28 15:08:17","author_login":"Screach","userid":6,"content":"Message basique de test avec video youtube. https:\/\/www.youtube.com\/watch?v=IKHqzAhAKcY"},{"date":"2016-03-28 15:08:18","author_login":"debug","userid":5,"content":"Message basique de test avec image. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/images\/1439289279876.jpg"},{"date":"2016-03-28 15:08:21","author_login":"Screach","userid":6,"content":"Message basique de test avec video. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/webm\/1434913899382.webm"},{"date":"2016-03-28 15:08:22","author_login":"debug","userid":5,"content":"Message basique de test avec musique. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/music\/You_dont_know.mp3"}]}';
 
 function init() {
-	
+
 	environnement = new Object();
 	environnement.users = {};
 	
-	var debugUser = User.fromJSON($.parseJSON(DEBUG_JSON_CONNECTION));
-	
-	environnement.users[debugUser.id+""] = debugUser;
 	environnement.errorUser = new User(-1, "Error", "Unknown", "User" 
 		, "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm"
 		, false);
@@ -86,6 +66,9 @@ function init() {
 		
 		setConnectedUserUI();
 		fillIndexComments();
+		
+		autoResize();
+		
 	} else {
 		var sp = window.location.href.split("/");
 	
@@ -94,6 +77,16 @@ function init() {
 		}
 	}
 	
+	
+}
+
+
+
+function autoResize() {
+	$.each( $(".auto-resize"), function(index, value) {
+		setDefaultSize($(value));
+		$(value).removeClass("auto-resize");
+	});
 }
 
 function setConnectedUserUI() {
@@ -110,7 +103,7 @@ function setConnectedUserUI() {
 	
 	(user.nbFollowers != undefined) ? $(USER_FOLLOWERS_ID).first().text(user.nbFollowers+"") : $(USER_FOLLOWERS_ID).first().text("0");
 	(user.nbFollows != undefined) ? $(USER_FOLLOWS_ID).first().text(user.nbFollows+"") : $(USER_FOLLOWS_ID).first().text("0");	
-	(user.nbComments != undefined) ? $(USER_COMMENTS_ID).first().text(user.nbComments+"") : $(USER_COMMENTS_ID).first().text("0");
+	(user.nbMessages != undefined) ? $(USER_COMMENTS_ID).first().text(user.nbMessages+"") : $(USER_COMMENTS_ID).first().text("0");
 	
 	$(AVATAR_MAIN).each(function() {
 		$(this).attr("src", addAvatarSize(user.avatar, DEFAULT_AVATAR_SIZE));
@@ -119,12 +112,27 @@ function setConnectedUserUI() {
 }
 
 function fillIndexComments() {
-	var comments = getDebugComments();
+	//var comments = getDebugComments();
+	
+	var comments = getMainComments();
+	
 	
 	
 	for (var i in comments) {
 		$(COMMENTS_MAIN_CONTAINER).prepend(comments[i].getHtml());
 	}
+}
+
+
+function getMainComments() {
+	var jsonStr = DEBUG_JSON_COMMENTS;
+	var result;
+	
+	var j = $.parseJSON(jsonStr)['comments'];
+	
+	result = SearchResults.fromJSON(j);	
+	
+	return result;
 }
 
 function gotoIndex() {
@@ -155,7 +163,7 @@ function connexion(form) {
 function disconnect() {
 	
 	Cookies.remove(CRT_USER_CK);
-	
+	Cookies.remove(KEY_CK);
 	
 	var request = $.ajax({
 		url: SERVER_URL + DISCONNET_URL,
@@ -202,17 +210,15 @@ function connect(login, password) {
 							 reason, result.message + ", code : " + result.code);
 		
 				$(CONNEXION_ALERT).show();
-		
+				
 
 			} else {
 				user = User.fromJSON(j);
 	
 	
 				Cookies.set(CRT_USER_CK, user.toArray());
+				Cookies.set(KEY_CK, j.key);
 				
-	
-				environnement.users[user.id+""] = user; 
-				environnement.crtUser = user;
 				window.location.href = MAIN_PAGE; 	
 		
 				return true;
@@ -260,14 +266,14 @@ User.fromJSON = function(j) {
 	
 	var result = new User(j.userId, j.login, j.fName, j.lName, j.avatar, false);
 	
+	if(j.contact != undefined)
+		contact = j.contact;
 	if(j.nbFollows != undefined)
 		result.nbFollows = j.nbFollows;
-	
 	if(j.nbFollowers != undefined)
 		result.nbFollowers = j.nbFollowers;
-	
-	if(j.nbComments != undefined)
-		result.nbComments = j.nbComments;
+	if(j.nbMessages != undefined)
+		result.nbMessages = j.nbMessages;
 
 	
 
@@ -293,8 +299,8 @@ User.prototype.toArray = function() {
 	if(this.nbFollowers != undefined)
 		result["nbFollowers"] = this.nbFollowers;
 	
-	if(this.nbComments != undefined)
-		result["nbComments"] = this.nbComments;
+	if(this.nbMessages != undefined)
+		result["nbMessages"] = this.nbMessages;
 		
 	
 	return result;
@@ -322,7 +328,6 @@ Comment.prototype.getHtml = function() {
 	var media = "";
 	var auth = environnement.users[this.author+""];
 	
-	
 	if(auth == undefined) {
 		var authorId = this.author;
 		var request = $.ajax({
@@ -349,7 +354,8 @@ Comment.prototype.getHtml = function() {
 		});
 
 	}
-	
+	moment.locale('fr');
+	var date = moment(this.date);
 	
 	integratedContent = this.content;
 	
@@ -384,6 +390,7 @@ Comment.prototype.getHtml = function() {
 	result += '<p>\n';
 	result += '<span class="MsgAuthor">' + auth.fName + " " + auth.lName + '</span>\n';
 	result += '<span class="MsgLogin">@' + auth.login + '</span>\n';
+	result += '<span class="MsgDate"> - ' + date.fromNow() + '</span>\n';
 	result += '</p>\n';
 	result += '<p class="MsgContent" >\n';
 	result += integratedContent;
@@ -424,20 +431,7 @@ SearchResults.prototype.getHtml = function(){
 }
 
 
-SearchResults.fromJSON = function(json) {
-	var result = JSON.parse(s, SearchResults.revival);
-	
-	if (result.error != undefined) {
-		alert(result.error);
-		
-		return undefined;
-	}
-	
-	return result;
-	
-}
-
-
+/*
 SearchResults.revival = function(key, value) {
 	switch (key) {
 		case "date" :
@@ -456,7 +450,17 @@ SearchResults.revival = function(key, value) {
 	}
 }
 
+*/
 
+SearchResults.fromJSON = function(j) {
+	var result = {};
+	
+	for(var i in j) {
+		result[i] = new Comment(0, j[i].userid, j[i].content, j[i].date, 0);
+	}
+	
+	return result;
+}
 
 function ServerError(message, code) {
 	this.message = message;
@@ -576,7 +580,5 @@ function setLoading(elem) {
 function setText(elem) {
 
 }
-
-
 
 

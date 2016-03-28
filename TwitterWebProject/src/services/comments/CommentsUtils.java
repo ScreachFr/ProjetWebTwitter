@@ -100,7 +100,7 @@ public class CommentsUtils {
 	
 	private static void putComment(int userId, String time, String authorLogin, String content) throws SQLException {
 		Document doc = new Document();
-		
+				
 		doc.put(USER_ID_MONGO, userId);
 		doc.put(DATE_MONGO, time);
 		doc.put(AUTHOR_LOGIN_MONGO, authorLogin);
@@ -115,14 +115,15 @@ public class CommentsUtils {
 		FindIterable<Document> qResult;
 		Map<String, Object> args = new HashMap<>();
 		
-		args.put(USER_ID_MONGO, userId);
+		if(userId != -1)
+			args.put(USER_ID_MONGO, userId);
 		startIndex = page * nbPerPage;
 		
 		qResult = MongoMapper.executeGet(COMMENT_COLLECTION_NAME, args, startIndex);
 		
 		int i = 0;
 		for (Document document : qResult) {
-			result.add(new Comment(userId, document.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(document.getString(DATE_MONGO)),
+			result.add(new Comment(document.getInteger(USER_ID_MONGO, 0), document.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(document.getString(DATE_MONGO)),
 					document.getString(CONTENT_MONGO)));
 			i++;
 			if(i >= nbPerPage)
@@ -134,18 +135,6 @@ public class CommentsUtils {
 	}
 	
 	
-	public static void main(String[] args) {
-//		System.out.println(AuthenticationUtils.login("debug", "password"));
-		
-//		String key = "b293d9f187a14182b6b21914c7f86881";
-//		
-//		System.out.println(CommentsUtils.addComment(key, "Hello world!"));
-		
-		
-		System.out.println(getComments(1, 0, 1));
-		
-	}
-
 	public static long getNbMessagesByUserId(int userId) throws SQLException {		
 		MongoDatabase database = MongoMapper.getMongoDBConnection();
 		MongoCollection<Document> collect = database.getCollection(COMMENT_COLLECTION_NAME);
@@ -158,6 +147,12 @@ public class CommentsUtils {
 		whereQuery.putAll(args);
 		
 		return collect.count(whereQuery);
+	}
+	
+	public static void main(String[] args) {
+		
+		
+		System.out.println(getComments(-1, 0, 10));
 	}
 }
 

@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import database.DBMapper;
+
 public class Comment {
 
 	private int authId;
@@ -44,7 +46,7 @@ public class Comment {
 		
 		result.put(CommentsUtils.USER_ID_MONGO, authId);
 		result.put(CommentsUtils.AUTHOR_LOGIN_MONGO, authLogin);
-		result.put(CommentsUtils.DATE_MONGO, date);
+		result.put(CommentsUtils.DATE_MONGO, DBMapper.DATE_FORMAT.format(date));
 		result.put(CommentsUtils.CONTENT_MONGO, content);
 		
 		
