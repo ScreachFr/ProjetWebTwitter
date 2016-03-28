@@ -3,6 +3,10 @@ body {
 	min-height : 100%;
 }
 
+.container {
+	width : 60%;
+}
+
 .login-body {
 	background-color : #79d8a1;
 
@@ -61,31 +65,28 @@ nav {
 .write-message img {
 	display : inline-block;
 	width : 4%;
-	height : 4%;
-	margin : 10px 5px 10px 10px;
+	height : 100%;
+	margin : 1% 0.5% 1% 1%;
 }
 
 .write-message form {
 	display : inline-block;
-	width : 100%;
+	width : 100% !important;
+	height : 100%;
 }
 
 .write-message-content {
-	display : inline-box;
+	display : inline-block;
 	width : 94%;
-	float : right;
-	margin-top : 10px;
 }
 
 .write-message-content input {
 	display : inline;
-	width : 93.5%;
-	height : 100%;
-	padding-top : 1%;
+	width : 92%;
+	margin : auto;
 }
 
 .write-message-content button {
-	margin-bottom : 3px;
 	margin-left : 1%;
 }
 
@@ -241,8 +242,6 @@ footer {
 	height : 250px;
 }
 
-body {position: relative;}
-footer {position: absolute; bottom: 0; left: 0; right: 0}
 
 
 
