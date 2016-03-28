@@ -211,7 +211,9 @@ aside h5 {
 	
 }
 
-
+.extend {
+	max-width : 100%;
+}
 
 
 
@@ -234,11 +236,11 @@ footer {
 }
 
 .max-width {
-	width : 250px;
+	width : 25%;
 }
 
 .max-height {
-	height : 250px;
+	max-height : 250px;
 }
 
 
