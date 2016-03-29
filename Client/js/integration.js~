@@ -87,7 +87,7 @@ Video = function() {}
 Video.regex = /(([^ ]+)(\.(webm|mp4|ogv)))/gim;
 
 Video.toHtml = function(url) {
-	return "<video controls src='" + url + "' class='video auto-resize'>Votre nagivateur ne supporte pas cette fonctionnalité.</video>";
+	return "<video vjs-controls src='" + url + "' class='video auto-resize'>Votre nagivateur ne supporte pas cette fonctionnalité.</video>";
 }
 
 Audio = function() {}
