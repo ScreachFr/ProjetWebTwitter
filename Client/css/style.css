@@ -22,15 +22,18 @@ header {
 .logs {
 	padding-left : 0;
 	padding-right : 0;
+	margin : 1.5% 0 0 0;	
 }
 
+
 .logs img {
-	width : 30%;
-	height : 30%;
+	width : 25%;
+	height : 25%;
 	margin-top : 5%;
 	margin-right : 5%;
 	display : inline-block;
 }
+
 
 .logo {
 	padding-left : 0;
