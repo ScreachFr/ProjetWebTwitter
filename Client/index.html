@@ -103,13 +103,33 @@
 		<main>
 			<div class="container-main">
 			
+				<div class="alert alert-danger alert-dismissible fade in" role="alert" id="alert-fail" style="display : none;" onclick="hideAlert(this);" > 
+					<button type="button" class="close" aria-label="Close">
+					<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="alert-title">Set title</h4>
+					<p class="alert-content">Set content</p>
+				</div>
+		
+				<div class="alert alert-success alert-dismissible fade in" role="alert" id="alert-success" style="display : none;" onclick="hideAlert(this);" > 
+					<button type="button" class="close" aria-label="Close">
+					<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="alert-title">Set title</h4>
+					<p class="alert-content">Set content</p>
+				</div>
+			
+				<div class="alert alert-info fade in" role="alert" id="alert-loading" style="display : none;" > 
+					<p><span class="alert-content">Set content</span><img src="img/loading3.gif" /></p>
+				</div>
+			
 				<div class=" message-container">			
 				
 					<div class="write-message">
 						<div class="write-message-content">
 							<img src="" class="thumbnail avatar-main" />
-							<form  onsubmit="return false;">
-								<input class="form-control" type="text" placeholder="Quoi de neuf ?">	
+							<form  onsubmit="handleCommentSending(this); return false;">
+								<input class="form-control" id="write-message-input" name="content" type="text" placeholder="Quoi de neuf ?">	
 								<button type="submit"  class="btn btn-primary" ><span class="fui-bubble"></span></button>
 							</form>
 						</div>

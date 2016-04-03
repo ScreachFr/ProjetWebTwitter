@@ -41,7 +41,6 @@ main {
 .header-container {
 	width : 1000px;
 	margin : auto;
-	overflow : scroll;
 	
 }
 
@@ -327,7 +326,10 @@ footer {
 }
 
 
-
+#alert-loading img {
+	width : 25px;
+	height : 25px;
+}
 
 
 

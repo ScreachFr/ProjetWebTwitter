@@ -43,6 +43,8 @@ const GETUSER_YOUR_ID = "yourid";
 
 const REGISTER_URL = "user/create";
 
+const ADD_COMMENT_URL = "comment/add";
+
 const REGISTER_LOGIN = "login";
 const REGISTER_PASSWORD = "password";
 const REGISTER_FNAME = "fname";
@@ -50,7 +52,7 @@ const REGISTER_LNAME = "lname";
 const REGISTER_MAIL = "email";
 
 
-const DEBUG_JSON_COMMENTS = '{"comments":[{"date":"2016-03-28 15:08:13","author_login":"Screach","userid":6,"content":"Message basique de test."},{"date":"2016-03-28 15:08:15","author_login":"debug","userid":5,"content":"Message basique de test avec musique spotify. https:\/\/open.spotify.com\/track\/1BUxKj2M9PDgm7Ie8YaVdb"},{"date":"2016-03-28 15:08:17","author_login":"Screach","userid":6,"content":"Message basique de test avec video youtube. https:\/\/www.youtube.com\/watch?v=IKHqzAhAKcY"},{"date":"2016-03-28 15:08:18","author_login":"debug","userid":5,"content":"Message basique de test avec image. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/images\/1439289279876.jpg"},{"date":"2016-03-28 15:08:21","author_login":"Screach","userid":6,"content":"Message basique de test avec video. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/webm\/1434913899382.webm"},{"date":"2016-03-28 15:08:22","author_login":"debug","userid":5,"content":"Message basique de test avec musique. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/music\/You_dont_know.mp3"}]}';
+const DEBUG_JSON_COMMENTS = '{"comments":[{"date":"2016-03-28 15:08:13","author_login":"Screach","_id":"56f92cbd5474017330576029","userid":6,"content":"Message basique de test."},{"date":"2016-03-28 15:08:15","author_login":"debug","_id":"56f92cbf547401733057602b","userid":5,"content":"Message basique de test avec musique spotify. https:\/\/open.spotify.com\/track\/1BUxKj2M9PDgm7Ie8YaVdb"},{"date":"2016-03-28 15:08:17","author_login":"Screach","_id":"56f92cc1547401733057602d","userid":6,"content":"Message basique de test avec video youtube. https:\/\/www.youtube.com\/watch?v=IKHqzAhAKcY"},{"date":"2016-03-28 15:08:18","author_login":"debug","_id":"56f92cc2547401733057602f","userid":5,"content":"Message basique de test avec image. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/images\/1439289279876.jpg"},{"date":"2016-03-28 15:08:21","author_login":"Screach","_id":"56f92cc55474017330576031","userid":6,"content":"Message basique de test avec video. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/webm\/1434913899382.webm"},{"date":"2016-03-28 15:08:22","author_login":"debug","_id":"56f92cc65474017330576033","userid":5,"content":"Message basique de test avec musique. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/music\/You_dont_know.mp3"},{"date":"2016-04-03 18:19:37","author_login":"debug","_id":"570142999966cc5a44bc6587","userid":5,"content":"test"},{"date":"2016-04-03 18:31:45","author_login":"debug","_id":"570145715474012ab12a20e1","userid":5,"content":"test 2"},{"date":"2016-04-03 19:23:16","author_login":"debug","_id":"5701518454740130681dd461","userid":5,"content":"test 3"},{"date":"2016-04-03 19:23:40","author_login":"debug","_id":"5701519c54740130923bca87","userid":5,"content":"test 3"},{"date":"2016-04-03 19:24:05","author_login":"debug","_id":"570151b554740130b1b35b35","userid":5,"content":"test 4"}]}';
 
 function init() {
 
@@ -322,6 +324,14 @@ function Comment(id, author, content, date, score) {
 	
 }
 
+Comment.fromJSON = function(j) {
+	var result;
+	
+	result = new Comment(j._id, j.userid, j.content, j.date, 0);
+	
+	return result;
+}
+
 Comment.prototype.getHtml = function() {
 	var result = "";
 	var integratedContent;
@@ -383,15 +393,15 @@ Comment.prototype.getHtml = function() {
 		media = Audio.toHtml(this.content.match(Audio.regex)[0]);
 	}
 
-	moment().locale('fr');
 	
 	result += '<div class="Message">\n';
 	result += '<img src="' + auth.avatar + '" class="MsgAvatar thumbnail" />\n';
+	result += '<p class="message-id" style="display : none;">' + this.id + '</p>';
 	result += '<div class="MsgMain">\n';
 	result += '<p>\n';
 	result += '<span class="MsgAuthor">' + auth.fName + " " + auth.lName + '</span>\n';
 	result += '<span class="MsgLogin">@' + auth.login + '</span>\n';
-	result += '<span class="MsgDate"> - ' + moment(this.date).fromNow() + '</span>\n';
+	result += '<span class="MsgDate"> - ' + date.fromNow() + '</span>\n';
 	result += '</p>\n';
 	result += '<p class="MsgContent" >\n';
 	result += integratedContent;
@@ -457,7 +467,7 @@ SearchResults.fromJSON = function(j) {
 	var result = {};
 	
 	for(var i in j) {
-		result[i] = new Comment(0, j[i].userid, j[i].content, j[i].date, 0);
+		result[i] = new Comment(j[i]._id, j[i].userid, j[i].content, j[i].date, 0);
 	}
 	
 	return result;
@@ -554,6 +564,12 @@ function alertFail(title, content, serverError) {
 	$("#alert-fail").show();
 }
 
+function alertLoading(content) {
+	$("#alert-loading .alert-content").first().text(content);
+	
+	$("#alert-loading").show();
+}
+
 function defineAlert(alertId, alertTitle, alertContent, alertServerError) {
 	$(alertId + " " + ALERT_TITLE).first().text(alertTitle);
 	
@@ -569,17 +585,55 @@ function hideAlert(element) {
 	$(element).css("display", "none");
 }
 
+function hideLoading() {
+	hideAlert($("#alert-loading"));
+}
 
 function removeError(elem) {
 	$(elem).removeClass("has-error");
 }
 
-function setLoading(elem) {
-	$(elem).html();
+
+
+function handleCommentSending(form) {
+	var content;
+	
+	content = form.content.value;
+	sendComment(Cookies.get(KEY_CK), content);
 }
 
-function setText(elem) {
-
+function sendComment(author, content) {
+	alertLoading("Envoi du commentaire");
+	var request = $.ajax({
+			url: SERVER_URL + ADD_COMMENT_URL,
+			type: 'post',
+			data:  "key=" + author + "&text=" + content,
+			dataType: "json",
+			async: true,
+			success: function(data) {
+				hideLoading();				
+				if(data.errorMessage == undefined) {
+					alertSuccess("Succes", "Votre commentaire a  été envoyé avec succes.");
+					
+					addCommentToMain(Comment.fromJSON(data.comment));
+					$("#write-message-input").value = "";
+				} else {
+					alertFail("Echec", "Le server a renvoyé une erreur."
+					, new ServerError(data.errorMessage, data.errorCode));
+				}
+				
+				
+			}, 
+			error: function (xhr, ajaxOptions, thrownError) {
+				alertFail("Erreur", "Erreur de communication avec le server.");
+		  		hideLoading();
+		  	}
+	
+		});
+		
 }
 
 
+function addCommentToMain(comment) {
+	$(COMMENTS_MAIN_CONTAINER).prepend(comment.getHtml());
+}
