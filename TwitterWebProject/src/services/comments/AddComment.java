@@ -26,22 +26,21 @@ public class AddComment extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 6518914980624009051L;
 	private static final String PARAM_TEXT = "text";
-	private static final String PARAM_AUTHORLOGIN = "authorLogin";
-	private static final String PARAM_USERID = "userId";
+	private static final String PARAM_KEY = "key";
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		JSONObject answer;
-		String userId;
+		String key;
 		String text;
 		
-		userId = req.getParameter(PARAM_USERID);
+		key = req.getParameter(PARAM_KEY);
 		text = req.getParameter(PARAM_TEXT);
 		
 		ServicesTools.addCORSHeader(resp);
 		
-		answer = CommentsUtils.addComment(userId, text);
+		answer = CommentsUtils.addComment(key, text);
 		
 		PrintWriter out = resp.getWriter();
 		out.write(answer.toJSONString());
