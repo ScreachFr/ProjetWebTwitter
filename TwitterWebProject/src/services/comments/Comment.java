@@ -9,20 +9,23 @@ import org.json.simple.JSONObject;
 import database.DBMapper;
 
 public class Comment {
-
+	private String commentId;
 	private int authId;
 	private String authLogin;
 	private Date date;
 	private String content;
 	
-	public Comment(int authId, String authLogin, Date date, String content) {
-		super();
+	public Comment(String commentId, int authId, String authLogin, Date date, String content) {
+		this.commentId = commentId;
 		this.authId = authId;
 		this.authLogin = authLogin;
 		this.date = date;
 		this.content = content;
 	}
 	
+	public String getCommentId() {
+		return commentId;
+	}
 	
 	public int getAuthId() {
 		return authId;
@@ -43,7 +46,7 @@ public class Comment {
 	public JSONObject toJSON() {
 		JSONObject result = new JSONObject();
 		
-		
+		result.put(CommentsUtils.COMMENT_ID_MONGO, commentId);
 		result.put(CommentsUtils.USER_ID_MONGO, authId);
 		result.put(CommentsUtils.AUTHOR_LOGIN_MONGO, authLogin);
 		result.put(CommentsUtils.DATE_MONGO, DBMapper.DATE_FORMAT.format(date));
@@ -55,12 +58,12 @@ public class Comment {
 	
 	@Override
 	public String toString() {
-		return "Comment [authId=" + authId + ", authLogin=" + authLogin + ", date=" + date + ", content=" + content
+		return "Comment [commentId=" + commentId + ", authId=" + authId + ", authLogin=" + authLogin + ", date=" + date + ", content=" + content
 				+ "]";
 	}
 	
 	public static void main(String[] args) {
-		Comment c = new Comment(1, "test", new Date(System.currentTimeMillis()), "Hello world!");
+		Comment c = new Comment("azerty", 1, "test", new Date(System.currentTimeMillis()), "Hello world!");
 		
 		System.out.println(c);
 		System.out.println(c.toJSON());

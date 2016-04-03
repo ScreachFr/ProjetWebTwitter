@@ -29,11 +29,15 @@ import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 
 public class CommentsUtils {
+	public final static String COMMENT_ID_MONGO = "_id";
 	public final static String USER_ID_MONGO = "userid";
 	public final static String DATE_MONGO = "date";
 	public final static String AUTHOR_LOGIN_MONGO = "author_login";
 	public final static String CONTENT_MONGO = "content";
 	public final static String COMMENT_COLLECTION_NAME = "comments";
+	
+	public final static String COMMENT_JSON_ANSWER = "comment"; 
+	
 	
 	/**
 	 * Add a comment.
@@ -46,6 +50,8 @@ public class CommentsUtils {
 	public static JSONObject addComment(String key, String content) {
 		User crtUser;
 		int userId;
+		JSONObject answer;
+		Comment c;
 		
 		try {
 			if (!AuthenticationUtils.isKeyValid(key, AuthenticationUtils.KEY_VALIDITY_METHOD))
@@ -54,10 +60,12 @@ public class CommentsUtils {
 			userId = AuthenticationUtils.getUserIdByKey(key);
 			crtUser = UserUtils.getUser(userId);
 
-			putComment(userId, DBMapper.getTimeNow(), crtUser.getLogin(), content);
+			c = putComment(userId, DBMapper.getTimeNow(), crtUser.getLogin(), content);
 			
-			return ServicesTools.generatePositiveAnswer();
+			answer =  ServicesTools.generatePositiveAnswer();
+			answer.put(COMMENT_JSON_ANSWER, c.toJSON());
 			
+			return answer;
 		} catch (SQLException e) {
 			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
 		} catch (CannotConnectToDatabaseException e) {
@@ -98,7 +106,8 @@ public class CommentsUtils {
 		}
 	}
 	
-	private static void putComment(int userId, String time, String authorLogin, String content) throws SQLException {
+	private static Comment putComment(int userId, String time, String authorLogin, String content) throws SQLException {
+		Comment result;
 		Document doc = new Document();
 				
 		doc.put(USER_ID_MONGO, userId);
@@ -107,6 +116,22 @@ public class CommentsUtils {
 		doc.put(CONTENT_MONGO, content);
 		
 		MongoMapper.executeInsertOne(COMMENT_COLLECTION_NAME, doc);
+		
+		FindIterable<Document> qResult;
+		Map<String, Object> args = new HashMap<>();
+
+		args.put(USER_ID_MONGO, userId);
+		args.put(DATE_MONGO, time);
+		
+		qResult = MongoMapper.executeGet(COMMENT_COLLECTION_NAME, args, 0);
+		
+		doc = qResult.first();
+		
+		result = new Comment(doc.get(COMMENT_ID_MONGO).toString(), doc.getInteger(USER_ID_MONGO, 0), doc.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(doc.getString(DATE_MONGO)),
+				doc.getString(CONTENT_MONGO));
+		
+		
+		return result;
 	}
 	
 	private static ArrayList<Comment> fetchComments(int userId, int page, int nbPerPage) throws SQLException {
@@ -123,8 +148,10 @@ public class CommentsUtils {
 		
 		int i = 0;
 		for (Document document : qResult) {
-			result.add(new Comment(document.getInteger(USER_ID_MONGO, 0), document.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(document.getString(DATE_MONGO)),
+			result.add(new Comment(document.get(COMMENT_ID_MONGO).toString(), document.getInteger(USER_ID_MONGO, 0), document.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(document.getString(DATE_MONGO)),
 					document.getString(CONTENT_MONGO)));
+			
+			
 			i++;
 			if(i >= nbPerPage)
 				break;
@@ -150,9 +177,12 @@ public class CommentsUtils {
 	}
 	
 	public static void main(String[] args) {
+		String key = (String) AuthenticationUtils.login("debug", "password").get("key");
 		
+		System.out.println(addComment(key, "test 5"));
 		
-		System.out.println(getComments(-1, 0, 10));
+//		System.out.println(getComments(-1, 0, 15));
+		
 	}
 }
 
