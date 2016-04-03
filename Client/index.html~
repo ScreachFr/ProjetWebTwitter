@@ -38,26 +38,26 @@
 	<body onload="init();">
 		<!-- HEADER -->
 		<header class="">
-			<div class="container">
+			<div class="header-container">
 				<!-- LOGO -->
-				<div class="logo col col-xs-3">
+				<div class="logo">
 					<a href="#"><img src="img/logo.png" onclick="gotoIndex()"  /></a>
 				</div>
 			
 				<!-- NAV -->
-				<nav class="col-md-7">
-					<form class="navbar-form navbar-right" role="search">
+				<nav class="">
+					<form class="navbar-form" role="search">
 						<div class="form-group">
 							<input type="text" class="form-control search-input" placeholder="Rechercher">
 						</div>
 						<button type="submit" class="login-field-icon btn btn-primary search-button"><span class="fui-search"></span></button>
 					</form>
 				</nav>
-					<!-- LOGIN/LOGOUT -->
-					<div class="logs col-md-2">
-						<img src="" class="thumbnail avatar-main logs-avatar" />
-						<a href="" onclick="disconnect()" title="Deconnexion"><span class="fui-power"></span></a>
-					</div>
+			<!-- LOGIN/LOGOUT -->
+				<div class="logs">
+					<img src="" class="thumbnail avatar-main logs-avatar" />
+					<a href="" onclick="disconnect()" title="Deconnexion"><span class="fui-power"></span></a>
+				</div>
 	
 			</div>
 		</header>
@@ -101,14 +101,14 @@
 		
 		<!-- MAIN -->
 		<main>
-			<div class="container container-main">
+			<div class="container-main">
 			
 				<div class=" message-container">			
 				
-					<div class="write-message col-md-12">
+					<div class="write-message">
 						<div class="write-message-content">
 							<img src="" class="thumbnail avatar-main" />
-							<form class="form-inline" onsubmit="return false;">
+							<form  onsubmit="return false;">
 								<input class="form-control" type="text" placeholder="Quoi de neuf ?">	
 								<button type="submit"  class="btn btn-primary" ><span class="fui-bubble"></span></button>
 							</form>
