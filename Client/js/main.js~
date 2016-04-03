@@ -616,7 +616,8 @@ function sendComment(author, content) {
 					alertSuccess("Succes", "Votre commentaire a  été envoyé avec succes.");
 					
 					addCommentToMain(Comment.fromJSON(data.comment));
-					$("#write-message-input").value = "";
+					$("#write-message-input").val("");
+					$("#Comments-v").text(parseInt($("#Comments-v").text())+1);
 				} else {
 					alertFail("Echec", "Le server a renvoyé une erreur."
 					, new ServerError(data.errorMessage, data.errorCode));

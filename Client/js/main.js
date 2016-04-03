@@ -308,11 +308,14 @@ User.prototype.toArray = function() {
 	return result;
 }
 
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 function Comment(id, author, content, date, score) {
 	this.id = id;
 	this.author = author;
-	this.content = content;
+	this.content = htmlEntities(content);
 	this.date = date;
 	this.score = 0;
 	
@@ -617,6 +620,7 @@ function sendComment(author, content) {
 					
 					addCommentToMain(Comment.fromJSON(data.comment));
 					$("#write-message-input").val("");
+					$("#Comments-v").text(parseInt($("#Comments-v").text())+1);
 				} else {
 					alertFail("Echec", "Le server a renvoyé une erreur."
 					, new ServerError(data.errorMessage, data.errorCode));
