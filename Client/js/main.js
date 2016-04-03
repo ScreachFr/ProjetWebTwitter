@@ -1,5 +1,6 @@
 const MAIN_PAGE = "index.html";
 const LOGIN_PAGE = "login.html";
+const REGISTER_PAGE = "register.html";
 
 const SERVER_URL = " http://li328.lip6.fr:8280/gr3_dupas_gaspar/";
 
@@ -74,7 +75,7 @@ function init() {
 	} else {
 		var sp = window.location.href.split("/");
 	
-		if(sp[sp.length-1] != LOGIN_PAGE) {
+		if(sp[sp.length-1] != LOGIN_PAGE && sp[sp.length-1] != REGISTER_PAGE) {
 			window.location.href = LOGIN_PAGE;
 		}
 	}
@@ -191,6 +192,9 @@ function disconnect() {
 function connect(login, password) {
 	var user;
 	var j;
+	
+	alertLoading("Connexion");
+	
 	var request = $.ajax({
 		url: SERVER_URL + LOGIN_URL,
 		type: 'post',
@@ -211,8 +215,8 @@ function connect(login, password) {
 					defineAlert(CONNEXION_ALERT, CONNEXION_ERROR_TITLE,
 							 reason, result.message + ", code : " + result.code);
 		
+				hideLoading();
 				$(CONNEXION_ALERT).show();
-				
 
 			} else {
 				user = User.fromJSON(j);
@@ -222,7 +226,7 @@ function connect(login, password) {
 				Cookies.set(KEY_CK, j.key);
 				
 				window.location.href = MAIN_PAGE; 	
-		
+				hideLoading();
 				return true;
 			}
 
@@ -235,7 +239,7 @@ function connect(login, password) {
       		
       		defineAlert(CONNEXION_ALERT, CONNEXION_ERROR_TITLE,
 							 reason, result.message + ", code : " + result.code);
-		
+			hideLoading();
 			$(CONNEXION_ALERT).show();
       	
       	}
@@ -485,6 +489,7 @@ function ServerError(message, code) {
 
 
 function register(element) {
+	alertLoading("Connexion");
 	var lName = element.lName.value;
 	var fName = element.fName.value;
 	var mail = element.mail.value;
@@ -508,6 +513,7 @@ function register(element) {
 	
 	if (fail) {
 		alertFail("Echec", "Erreur dans le formulaire d'inscription.");
+		hideLoading();
 		return;
 	}
 	
@@ -535,11 +541,13 @@ function register(element) {
 			} else {
 				alertFail("Echec", "Le server a renvoyé une erreur."
 					, new ServerError(data.errorMessage, data.errorCode));
-			}			
+			}
+			hideLoading();			
 		}, 
 	
 		error: function (xhr, ajaxOptions, thrownError) {
 	  		alertFail("Erreur", "Erreur de communication avec le server.");
+	  		hideLoading();
 	  	}
 	
 	});

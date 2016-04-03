@@ -34,7 +34,7 @@
 	<!--END HEAD-->
 	
 	<!--BODY-->
-	<body class="login-body">
+	<body onload="init()" class="login-body">
 		<div class="container" id="login-container">
 		
 		<div class="alert alert-danger alert-dismissible fade in" role="alert" id="alert-fail" style="display : none;" onclick="hideAlert(this);" > 
@@ -51,6 +51,10 @@
 			</button>
 			<h4 class="alert-title">Set title</h4>
 			<p class="alert-content">Set content</p>
+		</div>
+		
+		<div class="alert alert-info fade in" role="alert" id="alert-loading" style="display : none;" > 
+			<p><span class="alert-content">Set content</span><img src="img/loading3.gif" /></p>
 		</div>
 		
 		<!-- Register form -->

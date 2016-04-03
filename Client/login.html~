@@ -17,7 +17,6 @@
 		<!-- Loading Js cookie-->
 		<script src="res/js.cookie.js" type="text/javascript"></script>		
 		
-		
 		<!-- Loading Moment.js -->
 		<script src="res/moment-with-locales.js" type="text/javascript"></script>
 		
@@ -46,7 +45,9 @@
 				<h4 class="alert-title">Set title</h4>
 				<p class="alert-content">Set content</p>
 			</div>
-			
+			<div class="alert alert-info fade in" role="alert" id="alert-loading" style="display : none;" > 
+					<p><span class="alert-content">Set content</span><img src="img/loading3.gif" /></p>
+			</div>
 			
 			<!-- Connexion form -->
 			<form onSubmit="connexion(this); return false;">
