@@ -20,6 +20,7 @@ import services.ServicesTools;
 import services.comments.CommentsUtils;
 import services.errors.ServerErrors;
 import services.followers.FollowerUtils;
+import services.user.Stats;
 import services.user.User;
 import services.user.UserUtils;
 import utils.Debug;
@@ -279,24 +280,21 @@ public class AuthenticationUtils {
 	@SuppressWarnings("unchecked")
 	public static JSONObject generateLoginAnswer(String key) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
 		JSONObject ret = new JSONObject();
+		Stats stats;
+		
 		ret.put(ServicesTools.KEY_ARG, key);
 		
 		int userId = getUserIdByKey(key);
 		JSONObject infoUsers = getInfoUserByUserId(userId).toJSON();
 		ret.putAll(infoUsers);
 		
-		int nbFollows = FollowerUtils.getNbFollows(userId);
-		ret.put(ServicesTools.NB_FOLLOWS_ARG, nbFollows);
-
-		int nbFollowers = FollowerUtils.getNbFollowers(userId);
-		ret.put(ServicesTools.NB_FOLLOWERS_ARG, nbFollowers);
+		stats = UserUtils.getStats(userId);
+		ret.put(Stats.CLASS_JSON, stats.toJSON());
 		
-		long nbMsgs = CommentsUtils.getNbMessagesByUserId(userId);
-		ret.put(ServicesTools.NB_MESSAGES_ARG, nbMsgs);
-
 		return ret;
 	}
-
+	
+	
 	private static User getInfoUserByUserId(int userId) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
 		ResultSet result = DBMapper.executeQuery(GET_INFO_USER_BY_USER_ID_QUERY, QueryType.SELECT, userId);
 

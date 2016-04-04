@@ -162,7 +162,7 @@ public class CommentsUtils {
 	}
 	
 	
-	public static long getNbMessagesByUserId(int userId) throws SQLException {		
+	public static long getNbCommentsByUserId(int userId) throws SQLException {		
 		MongoDatabase database = MongoMapper.getMongoDBConnection();
 		MongoCollection<Document> collect = database.getCollection(COMMENT_COLLECTION_NAME);
 		BasicDBObject whereQuery = new BasicDBObject();

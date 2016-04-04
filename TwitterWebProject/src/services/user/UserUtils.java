@@ -11,6 +11,7 @@ import database.DBMapper.QueryType;
 import database.exceptions.CannotConnectToDatabaseException;
 import database.exceptions.QueryFailedException;
 import services.ServicesTools;
+import services.comments.CommentsUtils;
 import services.errors.ServerErrors;
 import services.followers.FollowerUtils;
 
@@ -149,7 +150,7 @@ public class UserUtils {
 	 * 	JSON answer.
 	 * XXX Test : ok
 	 */
-	public static JSONObject getUserToJSON(int userId, int askingUserId) {
+	public static JSONObject getUserToJSON(int userId, int askingUserId, boolean includeStats) {
 		JSONObject result;
 		User user;
 		try {
@@ -161,8 +162,11 @@ public class UserUtils {
 			if(askingUserId > 0) {
 				user.setContact(FollowerUtils.isUserFollowing(askingUserId, userId));
 			}
-		
+			
 			result = user.toJSON();
+
+			if(includeStats)
+				result.put(Stats.CLASS_JSON, getStats(userId).toJSON());
 		}  catch (SQLException e) {
 			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
 		} catch (CannotConnectToDatabaseException e) {
@@ -173,9 +177,15 @@ public class UserUtils {
 		return result;
 	}
 	
+	public static Stats getStats(int userId) throws CannotConnectToDatabaseException, QueryFailedException, SQLException {
+		int nbFollows = FollowerUtils.getNbFollows(userId);
+		int nbFollowers = FollowerUtils.getNbFollowers(userId);
+		long nbComments = CommentsUtils.getNbCommentsByUserId(userId);
+		
+		return new Stats(nbFollows, nbFollowers, nbComments);
+	}
 	
 	public static void main(String[] args) {
-		System.out.println(getUserToJSON(4, 5));
-		System.out.println(FollowerUtils.getUsersFollows(5));
+		System.out.println(getUserToJSON(13, 5, true));
 	}
 }

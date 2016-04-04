@@ -220,8 +220,9 @@ function connect(login, password) {
 
 			} else {
 				user = User.fromJSON(j);
-	
-	
+				
+				
+				
 				Cookies.set(CRT_USER_CK, user.toArray());
 				Cookies.set(KEY_CK, j.key);
 				
@@ -274,15 +275,15 @@ User.fromJSON = function(j) {
 	
 	if(j.contact != undefined)
 		contact = j.contact;
-	if(j.nbFollows != undefined)
-		result.nbFollows = j.nbFollows;
-	if(j.nbFollowers != undefined)
-		result.nbFollowers = j.nbFollowers;
-	if(j.nbMessages != undefined)
-		result.nbMessages = j.nbMessages;
-
 	
-
+	if(j.stats != undefined) {
+		if(j.stats.follows != undefined)
+			result.nbFollows = j.stats.follows;
+		if(j.stats.followers != undefined)
+			result.nBFollowers = j.stats.followers;
+		if(j.stats.comments != undefined)
+			result.nbMessages = j.stats.comments;
+	}
 	
 	return result;
 }
@@ -298,16 +299,18 @@ User.prototype.modifStatus = function() {
 User.prototype.toArray = function() {
 	var result = {"userId":this.id, "login":this.login, "fName":this.fName,
 					 "lName":this.lName, "avatar": this.avatar, "contact":this.contact};
-					 
-	if(this.nbFollows != undefined)
-		result["nbFollows"] = this.nbFollows;
 	
-	if(this.nbFollowers != undefined)
-		result["nbFollowers"] = this.nbFollowers;
 	
-	if(this.nbMessages != undefined)
-		result["nbMessages"] = this.nbMessages;
-		
+	if(this.nbFollows != undefined || this.nbFollowers != undefined 
+		|| this.nbMessages != undefined) {					 
+		result['stats'] = {};
+		if(this.nbFollows != undefined) 
+			result['stats']["follows"] = this.nbFollows;
+		if(this.nbFollowers != undefined) 
+			result['stats']["followers"] = this.nbFollowers;
+		if(this.nbMessages != undefined)
+			result['stats']["comments"] = this.nbMessages;
+	}
 	
 	return result;
 }
