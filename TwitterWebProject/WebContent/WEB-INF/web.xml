@@ -42,6 +42,10 @@
 				<servlet-name>AddComment</servlet-name> 
 				<servlet-class>services.comments.AddComment</servlet-class> 
 			</servlet>
+			<servlet> 
+				<servlet-name>GetComment</servlet-name> 
+				<servlet-class>services.comments.GetComment</servlet-class> 
+			</servlet>
 			
 		<!-- Connection test -->
 			<servlet> 
@@ -105,6 +109,10 @@
 			<servlet-mapping> 
 				<servlet-name>AddComment</servlet-name> 
 				<url-pattern>/comment/add</url-pattern> 
+			</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>GetComment</servlet-name> 
+				<url-pattern>/comment/get</url-pattern> 
 			</servlet-mapping>
 			
 		<!-- Connection test -->

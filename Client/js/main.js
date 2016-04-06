@@ -45,6 +45,10 @@ const GETUSER_YOUR_ID = "yourid";
 const REGISTER_URL = "user/create";
 
 const ADD_COMMENT_URL = "comment/add";
+const GET_COMMENT_URL = "comment/get";
+
+const FOLLOW_URL = "follow/add";
+const UNFOLLOW_URL = "follow/remove";
 
 const REGISTER_LOGIN = "login";
 const REGISTER_PASSWORD = "password";
@@ -52,6 +56,8 @@ const REGISTER_FNAME = "fname";
 const REGISTER_LNAME = "lname";
 const REGISTER_MAIL = "email";
 
+const TIME_PATTERN = "YYYY-MM-DD HH:mm:ss";
+const MAIN_COMMENT_NB = 10;
 
 const DEBUG_JSON_COMMENTS = '{"comments":[{"date":"2016-03-28 15:08:13","author_login":"Screach","_id":"56f92cbd5474017330576029","userid":6,"content":"Message basique de test."},{"date":"2016-03-28 15:08:15","author_login":"debug","_id":"56f92cbf547401733057602b","userid":5,"content":"Message basique de test avec musique spotify. https:\/\/open.spotify.com\/track\/1BUxKj2M9PDgm7Ie8YaVdb"},{"date":"2016-03-28 15:08:17","author_login":"Screach","_id":"56f92cc1547401733057602d","userid":6,"content":"Message basique de test avec video youtube. https:\/\/www.youtube.com\/watch?v=IKHqzAhAKcY"},{"date":"2016-03-28 15:08:18","author_login":"debug","_id":"56f92cc2547401733057602f","userid":5,"content":"Message basique de test avec image. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/images\/1439289279876.jpg"},{"date":"2016-03-28 15:08:21","author_login":"Screach","_id":"56f92cc55474017330576031","userid":6,"content":"Message basique de test avec video. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/webm\/1434913899382.webm"},{"date":"2016-03-28 15:08:22","author_login":"debug","_id":"56f92cc65474017330576033","userid":5,"content":"Message basique de test avec musique. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/music\/You_dont_know.mp3"},{"date":"2016-04-03 18:19:37","author_login":"debug","_id":"570142999966cc5a44bc6587","userid":5,"content":"test"},{"date":"2016-04-03 18:31:45","author_login":"debug","_id":"570145715474012ab12a20e1","userid":5,"content":"test 2"},{"date":"2016-04-03 19:23:16","author_login":"debug","_id":"5701518454740130681dd461","userid":5,"content":"test 3"},{"date":"2016-04-03 19:23:40","author_login":"debug","_id":"5701519c54740130923bca87","userid":5,"content":"test 3"},{"date":"2016-04-03 19:24:05","author_login":"debug","_id":"570151b554740130b1b35b35","userid":5,"content":"test 4"}]}';
 
@@ -59,6 +65,8 @@ function init() {
 
 	environnement = new Object();
 	environnement.users = {};
+	environnement.comments = {};
+	environnement.commentsQueue = {};
 	
 	environnement.errorUser = new User(-1, "Error", "Unknown", "User" 
 		, "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm"
@@ -66,15 +74,20 @@ function init() {
 	
 	if(Cookies.get(CRT_USER_CK) !== undefined) {
 		environnement.crtUser = User.fromJSON(Cookies.getJSON(CRT_USER_CK));
-		
+		environnement.key = Cookies.get(KEY_CK);
 		setConnectedUserUI();
 		fillIndexComments();
+		
+		//setInterval(function, time);
 		
 		autoResize();
 		
 	} else {
 		var sp = window.location.href.split("/");
-	
+		
+		
+		alert();
+		
 		if(sp[sp.length-1] != LOGIN_PAGE && sp[sp.length-1] != REGISTER_PAGE) {
 			window.location.href = LOGIN_PAGE;
 		}
@@ -115,25 +128,48 @@ function setConnectedUserUI() {
 }
 
 function fillIndexComments() {
-	//var comments = getDebugComments();
+	alertLoading("Chargement des commentaires.");
 	
-	var comments = getMainComments();
+	var now = moment().format(TIME_PATTERN);
+	
+	var request = $.ajax({
+		url: SERVER_URL + GET_COMMENT_URL,
+		type: 'post',
+		data:  "date=" + now + "&op=b&mresult=" + MAIN_COMMENT_NB,
+		dataType: "json",
+		success: function(data) {
+			hideLoading();				
+			if(data.errorMessage == undefined) {
+				var comments = SearchResults.fromJSON(data.comments);
+				
+				
+				for (var i in comments) {
+					$(COMMENTS_MAIN_CONTAINER).append(comments[i].getHtml());
+				}
+				
+			} else {
+				alertFail("Echec", "Le server a renvoyé une erreur."
+				, new ServerError(data.errorMessage, data.errorCode));
+			}
+			
+			
+		}, 
+		error: function (xhr, ajaxOptions, thrownError) {
+			alertFail("Erreur", "Erreur de communication avec le server.");
+	  		hideLoading();
+	  	}
+
+	});
 	
 	
-	
-	for (var i in comments) {
-		$(COMMENTS_MAIN_CONTAINER).prepend(comments[i].getHtml());
-	}
 }
 
-
-function getMainComments() {
-	var jsonStr = DEBUG_JSON_COMMENTS;
-	var result;
+function reverseArray(array) {
+	var result = {};
 	
-	var j = $.parseJSON(jsonStr)['comments'];
-	
-	result = SearchResults.fromJSON(j);	
+	for(var i in array) {
+		result.push(array[i]);
+	}
 	
 	return result;
 }
@@ -175,6 +211,7 @@ function disconnect() {
 		dataType: "json",
 		async: false,
 		success: function(data) {
+			window.location.href = LOGIN_PAGE;
 		}, 
 		
 		error: function (xhr, ajaxOptions, thrownError) {
@@ -273,8 +310,11 @@ User.fromJSON = function(j) {
 	
 	var result = new User(j.userId, j.login, j.fName, j.lName, j.avatar, false);
 	
+	
 	if(j.contact != undefined)
-		contact = j.contact;
+		result.contact = j.contact;
+	
+	
 	
 	if(j.stats != undefined) {
 		if(j.stats.follows != undefined)
@@ -404,15 +444,19 @@ Comment.prototype.getHtml = function() {
 	}
 
 	
-	result += '<div class="Message">\n';
+	result += '<div class="Message" message-id="' + this.id + '" author-id="' + auth.id + '">\n';
 	result += '<img src="' + auth.avatar + '" class="MsgAvatar thumbnail" />\n';
-	result += '<p class="message-id" style="display : none;">' + this.id + '</p>';
 	result += '<div class="MsgMain">\n';
 	result += '<p>\n';
 	result += '<span class="MsgAuthor">' + auth.fName + " " + auth.lName + '</span>\n';
 	result += '<span class="MsgLogin">@' + auth.login + '</span>\n';
 	result += '<span class="MsgDate"> - ' + date.fromNow() + '</span>\n';
-	result += '</p>\n';
+	if (auth.id != environnement.crtUser.id) {
+		if(auth.contact)
+			result += '<button onclick="unfollow(' + auth.id + ')" class="follow-button btn btn-danger" title="Ne plus suivre"><span class="fui-cross"></span></a></button>\n';
+		else
+			result += '<button onclick="follow(' + auth.id + ')" class="follow-button btn btn-info" title="Suivre"><span class="fui-plus"></span></a></button>\n';
+	}
 	result += '<p class="MsgContent" >\n';
 	result += integratedContent;
 	result += '</p>\n';
@@ -475,6 +519,7 @@ SearchResults.revival = function(key, value) {
 
 SearchResults.fromJSON = function(j) {
 	var result = {};
+	
 	
 	for(var i in j) {
 		result[i] = new Comment(j[i]._id, j[i].userid, j[i].content, j[i].date, 0);
@@ -627,8 +672,6 @@ function sendComment(author, content) {
 			success: function(data) {
 				hideLoading();				
 				if(data.errorMessage == undefined) {
-					alertSuccess("Succes", "Votre commentaire a  été envoyé avec succes.");
-					
 					addCommentToMain(Comment.fromJSON(data.comment));
 					$("#write-message-input").val("");
 					$("#Comments-v").text(parseInt($("#Comments-v").text())+1);
@@ -648,7 +691,100 @@ function sendComment(author, content) {
 		
 }
 
-
 function addCommentToMain(comment) {
 	$(COMMENTS_MAIN_CONTAINER).prepend(comment.getHtml());
 }
+
+function follow(idToFollow) {
+		alertLoading("Suivation en cours");
+		var request = $.ajax({
+			url: SERVER_URL + FOLLOW_URL,
+			type: 'post',
+			data:  "key=" + environnement.key + "&idtofollow=" + idToFollow,
+			dataType: "json",
+			success: function(data) {
+				hideLoading();
+				if(data.errorMessage == undefined) {
+					environnement.users[idToFollow+""].contact = true;
+					environnement.crtUser.nbFollows++;
+					Cookies.set(CRT_USER_CK, environnement.crtUser.toArray());
+					$("#Follows-v").text(parseInt($("#Follows-v").text())+1);				
+					changeFollowButton(idToFollow, true);
+				} else {
+					alertFail("Echec", "Le server a renvoyé une erreur."
+					, new ServerError(data.errorMessage, data.errorCode));
+				}
+				
+				
+			}, 
+			error: function (xhr, ajaxOptions, thrownError) {
+				alertFail("Erreur", "Erreur de communication avec le server.");
+		  		hideLoading();
+		  	}
+	
+		});
+}
+
+function unfollow(idToUnfollow) {
+		alertLoading("Dessuivation en cours");
+		var request = $.ajax({
+			url: SERVER_URL + UNFOLLOW_URL,
+			type: 'post',
+			data:  "key=" + environnement.key + "&idtounfollow=" + idToUnfollow,
+			dataType: "json",
+			success: function(data) {
+				hideLoading();				
+				if(data.errorMessage == undefined) {
+					environnement.users[idToUnfollow+""].contact = false;
+					environnement.crtUser.nbFollows--;
+					Cookies.set(CRT_USER_CK, environnement.crtUser.toArray());
+					$("#Follows-v").text(parseInt($("#Follows-v").text())-1);
+					changeFollowButton(idToUnfollow, false);
+				} else {
+					alertFail("Echec", "Le server a renvoyé une erreur."
+					, new ServerError(data.errorMessage, data.errorCode));
+				}
+				
+				hideLoading();
+			}, 
+			error: function (xhr, ajaxOptions, thrownError) {
+				alertFail("Erreur", "Erreur de communication avec le server.");
+		  		hideLoading();
+		  	}
+	
+		});
+}
+
+function changeFollowButton(id, follow) {
+	//var messages = $(".Message[author-id=" + id + "] .follow-button");
+	
+	
+	$(".Message[author-id=" + id + "] .follow-button").each(function (index, value) {
+		if(follow) {
+			value.setAttribute("class", "follow-button btn btn-danger");
+			value.setAttribute("onclick", "unfollow(" + id + ")");
+			value.innerHTML = "<span class='fui-cross'></span>";
+		} else {
+			value.setAttribute("class", "follow-button btn btn-info");
+			value.setAttribute("onclick", "follow(" + id + ")");
+			value.innerHTML = "<span class='fui-plus'></span>";
+		}
+	});
+		
+}
+
+
+
+
+function fetchNewComments() {
+	
+}
+
+
+
+
+
+
+
+
+

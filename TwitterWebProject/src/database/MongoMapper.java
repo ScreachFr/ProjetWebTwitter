@@ -74,11 +74,42 @@ public class MongoMapper {
 		whereQuery.putAll(whereArgs);
 		
 		result = database.find(whereQuery);
-		result.skip(startIndex);
 		
+		result.skip(startIndex);
 		
 		return result;
 	}
 	
+	public static FindIterable<Document> executeGetWSort(String collection, Map<String, Object> whereArgs, Map<String, Object> sort, int startIndex) throws SQLException {
+		MongoCollection<Document> database = getMongoDBConnection().getCollection(collection);
+		BasicDBObject whereQuery = new BasicDBObject();
+		BasicDBObject sortQuery = new BasicDBObject();
+		FindIterable<Document> result;
+		
+		whereQuery.putAll(whereArgs);
+		sortQuery.putAll(sort);
+		
+		result = database.find(whereQuery).sort(sortQuery);
+		
+		result.skip(startIndex);
+		
+		return result;
+	}
+	
+	
+	public enum Operator {
+		GT("gt"), LT("lt");
+		
+		private String str;
+		
+		private Operator(String str) {
+			this.str = str;
+		}
+		
+		@Override
+		public String toString() {
+			return "$" + str;
+		}
+	}
 }
 
