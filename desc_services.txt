@@ -7,7 +7,7 @@ Description des services
 	Description du service
 		Créé un nouvel utilisateur
 	Paramètres en entrée
-		login, password, mail
+		login, password, email, firstName, lastName
 	Format de sortie
 		JSON
 	Exemple de sortie
@@ -20,7 +20,7 @@ Description des services
 		TEST : partiels	
 	Classes JAVA en rapport avec le web service
 		service.user.*
-	Information additionnelles	
+	Information additionnelles
 		none
 		
 	Nom du web service
@@ -34,7 +34,7 @@ Description des services
 	Format de sortie
 		JSON
 	Exemple de sortie
-		{"key":"3fc636a14a574f24aeadce8c30d31942"}
+		{"key":"3fc636a14a574f24aeadce8c30d31942", {"userId" : 1, "login" : "toto", "email" : "toto@gmail.com", "fName" : "Alan", "lName" : "Turing", "avatar" : "https://en.gravatar.com/avatar/97dfebf4098c0f5c16bca61e2b76c373.jpg?d=mm", "contact" : false}, "stats" : {"follows" : 3, "followers" : 4, "comments" : 30}}
 		{"errorCode" : 1, "errorMessage" : "Bad login or password"}
 	Erreurs possible
 		1 Bad login or password
@@ -64,32 +64,162 @@ Description des services
 		Terminé
 		TEST : partiels
 	Classes JAVA en rapport avec le web service
-		services.auth.* except Logint 
+		services.auth.* except Login
 	Information additionnelles
 		none
 
 	Nom du web service
-		AddFriend
+		Follow
 	URL du web service
-		/friends/add
+		/follow/add
 	Description du service
-		Permet d'ajouter un amis
+		Permet de suivre quelqu'un
 	Paramètres en entrée
 		key : clef d'authentification.
-		iduser : iduser de la personne à ajouter en amis.
+		idToFollow : iduser de la personne à suivre.
 	Format de sortie
 		JSON
 	Exemple de sortie
 		{"success" : true}
-		{"errorCode" : "1", "errorMessage" : "Unknown user"}
+		{"errorCode" : 1, "errorMessage" : "Unknown user"}
 	Erreurs possible
 		1 Unknown user
-		2 User already in friend list
+		3 You tried to follow yourself, it's kinda sad tbh
+		4 You already are following this user
 	Avancement du service
-		0%
+		Terminé
+		TEST : ok
+	Classes JAVA en rapport avec le web service
+		services.followers.Follow ; .FollowerErrors ; .FollowerUtils
+	Information additionnelles
+		Ex fonction d'ajout d'amis
+	
+	Nom du web service
+		Unfollow
+	URL du web service
+		/follow/remove
+	Description du service
+		Permet d'arrêter de suivre quelqu'un
+	Paramètres en entrée
+		key : clef d'authentification.
+		idToUnFollow : iduser de la personne à arrêter de suivre.
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"success" : true}
+	Erreurs possible
+		1 Unknown user
+		3 You tried to follow yourself, it's kinda sad tbh // Quand on tente de se unfollow
+	Avancement du service
+		Terminé
+		TEST : ok
+	Classes JAVA en rapport avec le web service
+		services.followers.UnFollow ; .FollowerErrors ; .FollowerUtils
+	Information additionnelles
+	
+	Nom du web service
+		GetFollows
+	URL du web service
+		/follow/getfollows
+	Description du service
+		Permet d'obtenir les identifiants des utilisateurs qu'une personne suit.
+	Paramètres en entrée
+		userId : identifiant de la personne dont on souhaite obtenir les follows.
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"follows":[1,2,4,5]}
+	Erreurs possible
+		none
+	Avancement du service
+		Terminé
+		TEST : ok
+	Classes JAVA en rapport avec le web service
+		services.followers.GetFollows ; .FollowerErrors ; .FollowerUtils
+	Information additionnelles
+	
+	Nom du web service
+		GetFollowers
+	URL du web service
+		/follow/getFollowers
+	Description du service
+		Permet d'obenir les identifiants des utilisateurs qui suivent une personne
+	Paramètres en entrée
+		userId : identifiant de la personne dont on souhaite obtenir les followers.
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"followers":[1,3,4]}
+	Erreurs possible
+		none
+	Avancement du service
+		Terminé
+		TEST : ok
+	Classes JAVA en rapport avec le web service
+		services.followers.GetFollowers ; .FollowerErrors ; .FollowerUtils
+	Information additionnelles
+	
+	Nom du web service
+		AddComment
+	URL du web service
+		/comment/add
+	Description du service
+		Permet d'ajouter un commentaire.
+	Paramètres en entrée
+		key : clef d'authentification.
+		text : contenu du commentaire à ajouter
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"success" : true, "comment" : {"_id" : 12, "userid" : 1, "date" : "2016-04-01 22:22:22", "author_login" : "toto", "content" : "I see a double rainbow !!!"}}
+	Erreurs possible
+		none
+	Avancement du service
+		Terminé
+		TEST : ok
+	Classes JAVA en rapport avec le web service
+		services.comments.* (sauf GetComment)
+	Information additionnelles
+	
+	Nom du web service
+		GetComment
+	URL du web service
+		/comment/get
+	Description du service
+		Permet d'obtenir un certain nombre de commentaires postés avant ou après la date envoyée, potentiellement seulement venant d'un utilisateur ou des personnes qu'il follow.
+	Paramètres en entrée
+		date : Date
+		op : Opérateur ; a -> après la date ; b -> avant la date
+		mresult : Max result (10 par défaut)
+		iduser : Identifiant user (-1 par défaut)
+	Format de sortie
+		JSON
+	Exemple de sortie
+		{"comments" : {{"_id" : 12, "userid" : 1, "date" : "2016-04-01 22:22:22", "author_login" : "toto", "content" : "I see a double rainbow !!!"}, {"_id" : 12, "userid" : 1, "date" : "2016-04-01 22:22:42", "author_login" : "toto", "content" : "cété 1 blage lol"}}}
+	Erreurs possible
+		none
+	Avancement du service
+		Terminé
+		TEST : partial
+	Classes JAVA en rapport avec le web service
+		services.comments.* (sauf AddComment)
+	Information additionnelles
+	
+	Nom du web service
+		GetUser
+	URL du web service
+		/user/get
+	Description du service //TODO
+	Paramètres en entrée //TODO
+	Format de sortie
+		JSON
+	Exemple de sortie //TODO
+	Erreurs possible //TODO
+	Avancement du service //TODO
 	Classes JAVA en rapport avec le web service
 	Information additionnelles
-		none
+	
+	
 	
 	Nom du web service
 	URL du web service
@@ -102,11 +232,3 @@ Description des services
 	Classes JAVA en rapport avec le web service
 	Information additionnelles
 	
-
-
-
-
-
-
-
-
