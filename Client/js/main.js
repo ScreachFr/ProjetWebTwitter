@@ -83,19 +83,26 @@ function init() {
 		
 		var followsOnly;
 		
-		if(Cookies.get(FOLLOWS_ONLY_CK) != undefined){
-			followsOnly = Cookies.get(FOLLOWS_ONLY_CK);
-			$('#follow-only').prop('checked', true);
+		console.log(Cookies.get(FOLLOWS_ONLY_CK));
+		
+		if(Cookies.get(FOLLOWS_ONLY_CK) != undefined) {
+			if(Cookies.get(FOLLOWS_ONLY_CK) == "true"){
+				followsOnly = Cookies.get(FOLLOWS_ONLY_CK);
+				$('#follow-only').prop('checked', true);
+			} else {
+				followsOnly = false;
+				$('#follow-only').prop('checked', false);
+			}
 		} else {
 			followsOnly = false;
 			$('#follow-only').prop('checked', false);
+			Cookies.set(FOLLOWS_ONLY_CK, false);
 		}
 		
 		fillIndexComments(followsOnly);
 		
 		//setInterval(function, time);
 		
-		autoResize();
 		
 	} else {
 		setNotConnectedUserIU();
@@ -156,8 +163,10 @@ function setNotConnectedUserIU() {
 	});
 	
 	$(".follows-only-group").hide();
+	$(".write-message-content").hide();	
 	
 	$("#connexion-button").attr("title", "Se connecter");
+	
 
 }
 
@@ -168,10 +177,10 @@ function switchFollowsOnlyIndex() {
 	
 
 	if (fo_ck == "false") {
-		Cookies.set(FOLLOWS_ONLY_CK, false);
+		Cookies.set(FOLLOWS_ONLY_CK, true);
 		fo = true;
 	} else {	
-		Cookies.set(FOLLOWS_ONLY_CK, true);
+		Cookies.set(FOLLOWS_ONLY_CK, false);
 		fo = false;
 	}
 	
@@ -189,8 +198,6 @@ function fillIndexComments(followsOnly) {
 		iduser = -1;
 	}
 	
-	Cookies.set(FOLLOWS_ONLY_CK, followsOnly);
-	
 	var now = moment().format(TIME_PATTERN);
 	
 	var request = $.ajax({
@@ -207,7 +214,7 @@ function fillIndexComments(followsOnly) {
 				for (var i in comments) {
 					$(COMMENTS_MAIN_CONTAINER).append(comments[i].getHtml());
 				}
-				
+				autoResize();
 			} else {
 				alertFail("Echec", "Le server a renvoyé une erreur."
 				, new ServerError(data.errorMessage, data.errorCode));
