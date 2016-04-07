@@ -65,6 +65,8 @@ header {
 
 }
 
+
+
 .logs span {
 	color : #27AE60;
 	display : inline-block;
@@ -341,14 +343,30 @@ footer {
 	margin-right : 10px;
 	margin-top : 5px;
 }
+.follow-button.btn-info {
+	background : #FFF;
+	color : #A8A8A8;
+}
+
+.follow-button.btn-danger {
+	background : #FFF;
+	color : #A8A8A8;
+}
+
+.follow-button.btn-info:hover {
+	color : #FFF;
+	background : #3498DB;
+}
+
+.follow-button.btn-danger:hover {
+	color : #FFF;
+	background : #E74C3C;
+}
 
 
-
-
-
-
-
-
+.follows-only-group {
+	display : inline-block;
+}
 
 
 

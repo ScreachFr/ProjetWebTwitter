@@ -19,6 +19,7 @@ import services.ServicesTools;
 import services.auth.AuthErrors;
 import services.auth.AuthenticationUtils;
 import services.errors.ServerErrors;
+import services.followers.FollowerUtils;
 import services.user.User;
 import services.user.UserUtils;
 import utils.Debug;
@@ -103,27 +104,35 @@ public class CommentsUtils {
 			return result;
 
 		} catch (SQLException e) {
-			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
+			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR); 
+		} catch (CannotConnectToDatabaseException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.CANNOT_CONNECT_TO_DATABASE);
+		} catch (QueryFailedException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.QUERY_FAILED);
 		}
 	}
 
-	public static JSONObject getCommentsDependsOnTime(String date, int maxResult, Operator op) {
+	public static JSONObject getCommentsDependsOnTime(String date, int maxResult, Operator op, int idUser) {
 		JSONObject answer = new JSONObject();
 		ArrayList<Comment> comments;
 		ArrayList<JSONObject> jsonComments = new ArrayList<>();
 		try {
 		switch (op) {
 			case GT:
-				comments = getCommentsAfter(date, maxResult);
+				comments = getCommentsAfter(date, maxResult, idUser);
 				break;
 			case LT:
-				comments = getCommentsBefore(date, maxResult);
+				comments = getCommentsBefore(date, maxResult, idUser);
 				break;
 			default:
 				return ServicesTools.createJSONError(ServerErrors.BAD_ARGUMENT);
 			}
 		} catch (SQLException e) {
-			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR);
+			return ServicesTools.createJSONError(DataBaseErrors.UKNOWN_SQL_ERROR); 
+		} catch (CannotConnectToDatabaseException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.CANNOT_CONNECT_TO_DATABASE);
+		} catch (QueryFailedException e) {
+			return ServicesTools.createJSONError(DataBaseErrors.QUERY_FAILED);
 		}
 		
 		for (Comment comment : comments) {
@@ -163,7 +172,7 @@ public class CommentsUtils {
 		return result;
 	}
 
-	private static ArrayList<Comment> fetchComments(int userId, int page, int nbPerPage) throws SQLException {
+	private static ArrayList<Comment> fetchComments(int userId, int page, int nbPerPage) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
 		int startIndex;
 		FindIterable<Document> qResult;
 		Map<String, Object> args = new HashMap<>();
@@ -176,7 +185,7 @@ public class CommentsUtils {
 
 		
 
-		return commentsFromDocumentsToArrayList(qResult, nbPerPage);
+		return commentsFromDocumentsToArrayList(qResult, nbPerPage, -1);
 	}
 
 
@@ -194,15 +203,15 @@ public class CommentsUtils {
 		return collect.count(whereQuery);
 	}
 
-	public static ArrayList<Comment> getCommentsAfter(String date, int maxResult) throws SQLException {
-		return getCommentsDependsOnDate(date, maxResult, Operator.GT.toString());
+	public static ArrayList<Comment> getCommentsAfter(String date, int maxResult, int idUser) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
+		return getCommentsDependsOnDate(date, maxResult, Operator.GT.toString(), idUser);
 	}
 	
-	public static ArrayList<Comment> getCommentsBefore(String date, int maxResult) throws SQLException {
-		return getCommentsDependsOnDate(date, maxResult, Operator.LT.toString());
+	public static ArrayList<Comment> getCommentsBefore(String date, int maxResult, int idUser) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
+		return getCommentsDependsOnDate(date, maxResult, Operator.LT.toString(), idUser);
 	}
 	
-	private static ArrayList<Comment> getCommentsDependsOnDate(String date, int maxResult, String operator) throws SQLException {
+	private static ArrayList<Comment> getCommentsDependsOnDate(String date, int maxResult, String operator, int idUser) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
 		Map<String, Object> args = new HashMap<>();
 		Map<String, Object> sortArgs = new HashMap<>();
 		FindIterable<Document> qResult;
@@ -214,20 +223,22 @@ public class CommentsUtils {
 		
 		qResult = MongoMapper.executeGetWSort(COMMENT_COLLECTION_NAME, args, sortArgs, 0);
 
-		return commentsFromDocumentsToArrayList(qResult, maxResult);
+		return commentsFromDocumentsToArrayList(qResult, maxResult, idUser);
 	}
 	
-	private static ArrayList<Comment> commentsFromDocumentsToArrayList(FindIterable<Document> qResult, int maxResult) {
+	private static ArrayList<Comment> commentsFromDocumentsToArrayList(FindIterable<Document> qResult, int maxResult, int idUser) throws SQLException, CannotConnectToDatabaseException, QueryFailedException {
 		ArrayList<Comment> result = new ArrayList<>();
 		int i = 0;
 		
 		
 		for (Document document : qResult) {
+			if( idUser == -1 || FollowerUtils.isUserFollowing(idUser, document.getInteger(USER_ID_MONGO, -1)) || idUser == document.getInteger(USER_ID_MONGO, -1)) {
 			result.add(new Comment(document.get(COMMENT_ID_MONGO).toString(), document.getInteger(USER_ID_MONGO, 0), document.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(document.getString(DATE_MONGO)),
 					document.getString(CONTENT_MONGO)));
 			i++;
 			if(i >= maxResult)
 				break;
+			}
 		}
 		
 		return result;
@@ -241,7 +252,7 @@ public class CommentsUtils {
 //		System.out.println(getComments(-1, 0, 15));
 
 		
-		System.out.println(getCommentsDependsOnTime(DBMapper.getTimeNow(), 5, Operator.LT));
+		System.out.println(getCommentsDependsOnTime(DBMapper.getTimeNow(), 5, Operator.LT, -1));
 	}
 }
 

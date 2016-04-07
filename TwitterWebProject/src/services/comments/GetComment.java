@@ -20,11 +20,13 @@ public class GetComment extends HttpServlet {
 	public final static String PARAM_DATE = "date";
 	public final static String PARAM_OPERATOR = "op";
 	public final static String PARAM_MAX_RESULT = "mresult";
+	public final static String PARAM_ID_USER = "iduser";
 	
 	public final static String OP_AFTER = "a";
 	public final static String OP_BEFORE = "b";
 	
 	public final static int DFT_MAX_RESULT = 10;
+	public final static int DFT_ID_USER = -1;
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -33,6 +35,7 @@ public class GetComment extends HttpServlet {
 		String date;
 		String op;
 		int maxResult;
+		int idUser;
 		
 		date = req.getParameter(PARAM_DATE);
 		op = req.getParameter(PARAM_OPERATOR);
@@ -47,15 +50,25 @@ public class GetComment extends HttpServlet {
 			}
 		}
 		
+		if(ServicesTools.nullChecker(req.getParameter(PARAM_ID_USER))) {
+			idUser = DFT_ID_USER;
+		} else {
+			try {
+			idUser = Integer.parseInt(req.getParameter(PARAM_ID_USER));
+			} catch(NumberFormatException e) {
+				idUser = DFT_ID_USER;
+			}
+		}
+		
 		ServicesTools.addCORSHeader(resp);
 
 		if (!ServicesTools.nullChecker(date, op)) {
 			switch (op) {
 			case "a":
-				answer = CommentsUtils.getCommentsDependsOnTime(date, maxResult, Operator.GT);
+				answer = CommentsUtils.getCommentsDependsOnTime(date, maxResult, Operator.GT, idUser);
 				break;
 			case "b":
-				answer = CommentsUtils.getCommentsDependsOnTime(date, maxResult, Operator.LT);
+				answer = CommentsUtils.getCommentsDependsOnTime(date, maxResult, Operator.LT, idUser);
 				break;
 			default:
 				answer = ServicesTools.createJSONError(ServerErrors.BAD_ARGUMENT);

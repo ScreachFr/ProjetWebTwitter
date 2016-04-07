@@ -24,8 +24,11 @@ const COMMENTS_MAIN_CONTAINER = "#Messages";
 
 const AVATAR_MAIN = ".avatar-main";
 
+//Cookies
 const CRT_USER_CK = "crtUser";
 const KEY_CK = "key";
+const FOLLOWS_ONLY_CK = "follows-only";
+
 
 //Server args
 const CONNECTION_TEST_URL = "connection/test";
@@ -76,7 +79,18 @@ function init() {
 		environnement.crtUser = User.fromJSON(Cookies.getJSON(CRT_USER_CK));
 		environnement.key = Cookies.get(KEY_CK);
 		setConnectedUserUI();
-		fillIndexComments();
+		
+		var followsOnly;
+		
+		if(Cookies.get(FOLLOWS_ONLY_CK) != undefined){
+			followsOnly = Cookies.get(FOLLOWS_ONLY_CK);
+			$('#follow-only').prop('checked', true);
+		} else {
+			followsOnly = false;
+			$('#follow-only').prop('checked', false);
+		}
+		
+		fillIndexComments(followsOnly);
 		
 		//setInterval(function, time);
 		
@@ -86,7 +100,6 @@ function init() {
 		var sp = window.location.href.split("/");
 		
 		
-		alert();
 		
 		if(sp[sp.length-1] != LOGIN_PAGE && sp[sp.length-1] != REGISTER_PAGE) {
 			window.location.href = LOGIN_PAGE;
@@ -127,21 +140,48 @@ function setConnectedUserUI() {
 
 }
 
-function fillIndexComments() {
+function switchFollowsOnlyIndex() {
+	
+	var fo;	
+	var fo_ck = Cookies.get(FOLLOWS_ONLY_CK);
+	
+
+	if (fo_ck == "false") {
+		Cookies.set(FOLLOWS_ONLY_CK, false);
+		fo = true;
+	} else {	
+		Cookies.set(FOLLOWS_ONLY_CK, true);
+		fo = false;
+	}
+	
+	fillIndexComments(fo);
+}
+
+function fillIndexComments(followsOnly) {
 	alertLoading("Chargement des commentaires.");
+	
+	
+	var iduser;
+	if(followsOnly) {
+		iduser = environnement.crtUser.id;
+	} else {
+		iduser = -1;
+	}
+	
+	Cookies.set(FOLLOWS_ONLY_CK, followsOnly);
 	
 	var now = moment().format(TIME_PATTERN);
 	
 	var request = $.ajax({
 		url: SERVER_URL + GET_COMMENT_URL,
 		type: 'post',
-		data:  "date=" + now + "&op=b&mresult=" + MAIN_COMMENT_NB,
+		data:  "date=" + now + "&op=b&mresult=" + MAIN_COMMENT_NB + "&iduser=" + iduser,
 		dataType: "json",
 		success: function(data) {
 			hideLoading();				
 			if(data.errorMessage == undefined) {
 				var comments = SearchResults.fromJSON(data.comments);
-				
+				$(COMMENTS_MAIN_CONTAINER).empty();
 				
 				for (var i in comments) {
 					$(COMMENTS_MAIN_CONTAINER).append(comments[i].getHtml());
