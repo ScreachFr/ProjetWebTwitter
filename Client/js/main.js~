@@ -62,7 +62,8 @@ const REGISTER_MAIL = "email";
 const TIME_PATTERN = "YYYY-MM-DD HH:mm:ss";
 const MAIN_COMMENT_NB = 10;
 
-const DEBUG_JSON_COMMENTS = '{"comments":[{"date":"2016-03-28 15:08:13","author_login":"Screach","_id":"56f92cbd5474017330576029","userid":6,"content":"Message basique de test."},{"date":"2016-03-28 15:08:15","author_login":"debug","_id":"56f92cbf547401733057602b","userid":5,"content":"Message basique de test avec musique spotify. https:\/\/open.spotify.com\/track\/1BUxKj2M9PDgm7Ie8YaVdb"},{"date":"2016-03-28 15:08:17","author_login":"Screach","_id":"56f92cc1547401733057602d","userid":6,"content":"Message basique de test avec video youtube. https:\/\/www.youtube.com\/watch?v=IKHqzAhAKcY"},{"date":"2016-03-28 15:08:18","author_login":"debug","_id":"56f92cc2547401733057602f","userid":5,"content":"Message basique de test avec image. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/images\/1439289279876.jpg"},{"date":"2016-03-28 15:08:21","author_login":"Screach","_id":"56f92cc55474017330576031","userid":6,"content":"Message basique de test avec video. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/webm\/1434913899382.webm"},{"date":"2016-03-28 15:08:22","author_login":"debug","_id":"56f92cc65474017330576033","userid":5,"content":"Message basique de test avec musique. http:\/\/agaspard.freeboxos.fr\/cloud\/content\/music\/You_dont_know.mp3"},{"date":"2016-04-03 18:19:37","author_login":"debug","_id":"570142999966cc5a44bc6587","userid":5,"content":"test"},{"date":"2016-04-03 18:31:45","author_login":"debug","_id":"570145715474012ab12a20e1","userid":5,"content":"test 2"},{"date":"2016-04-03 19:23:16","author_login":"debug","_id":"5701518454740130681dd461","userid":5,"content":"test 3"},{"date":"2016-04-03 19:23:40","author_login":"debug","_id":"5701519c54740130923bca87","userid":5,"content":"test 3"},{"date":"2016-04-03 19:24:05","author_login":"debug","_id":"570151b554740130b1b35b35","userid":5,"content":"test 4"}]}';
+const DFT_AVATAR = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm"; 
+
 
 function init() {
 
@@ -97,13 +98,9 @@ function init() {
 		autoResize();
 		
 	} else {
-		var sp = window.location.href.split("/");
+		setNotConnectedUserIU();
+		fillIndexComments(false);
 		
-		
-		
-		if(sp[sp.length-1] != LOGIN_PAGE && sp[sp.length-1] != REGISTER_PAGE) {
-			window.location.href = LOGIN_PAGE;
-		}
 	}
 	
 	
@@ -137,6 +134,30 @@ function setConnectedUserUI() {
 	$(AVATAR_MAIN).each(function() {
 		$(this).attr("src", addAvatarSize(user.avatar, DEFAULT_AVATAR_SIZE));
 	});
+
+}
+
+function setNotConnectedUserIU() {
+	var login = "Paco";
+	var name = "Utilisateur non connecté";
+	
+	
+	
+	$(USER_LOGIN_ID).first().text("@" + login);
+	$(USER_NAME_ID).first().text(name);
+	
+	
+	$(USER_FOLLOWERS_ID).first().text("0");
+	$(USER_FOLLOWS_ID).first().text("0");	
+	$(USER_COMMENTS_ID).first().text("0");
+	
+	$(AVATAR_MAIN).each(function() {
+		$(this).attr("src", addAvatarSize(DFT_AVATAR, DEFAULT_AVATAR_SIZE));
+	});
+	
+	$(".follows-only-group").hide();
+	
+	$("#connexion-button").attr("title", "Se connecter");
 
 }
 
@@ -181,7 +202,7 @@ function fillIndexComments(followsOnly) {
 			hideLoading();				
 			if(data.errorMessage == undefined) {
 				var comments = SearchResults.fromJSON(data.comments);
-				
+				$(COMMENTS_MAIN_CONTAINER).empty();
 				
 				for (var i in comments) {
 					$(COMMENTS_MAIN_CONTAINER).append(comments[i].getHtml());
@@ -240,6 +261,9 @@ function connexion(form) {
 }
 
 function disconnect() {
+	if(environnement.crtUser == undefined) {
+		window.location.href = LOGIN_PAGE;
+	}
 	
 	Cookies.remove(CRT_USER_CK);
 	Cookies.remove(KEY_CK);
@@ -255,6 +279,7 @@ function disconnect() {
 		}, 
 		
 		error: function (xhr, ajaxOptions, thrownError) {
+      		window.location.href = LOGIN_PAGE;
       	}
 	
 	});
@@ -430,10 +455,17 @@ Comment.prototype.getHtml = function() {
 	
 	if(auth == undefined) {
 		var authorId = this.author;
+		var data;
+		
+		if (environnement.crtUser != undefined)
+			data = GETUSER_ID + "=" + authorId + "&" + GETUSER_YOUR_ID + "=" + environnement.crtUser.id;
+		else
+			data = GETUSER_ID + "=" + authorId;
+		
 		var request = $.ajax({
 			url: SERVER_URL + GETUSER_URL,
 			type: 'post',
-			data:  GETUSER_ID + "=" + authorId + "&" + GETUSER_YOUR_ID + "=" + environnement.crtUser.id,
+			data:  data,
 			dataType: "json",
 			async: false,
 			success: function(data) {
@@ -491,7 +523,7 @@ Comment.prototype.getHtml = function() {
 	result += '<span class="MsgAuthor">' + auth.fName + " " + auth.lName + '</span>\n';
 	result += '<span class="MsgLogin">@' + auth.login + '</span>\n';
 	result += '<span class="MsgDate"> - ' + date.fromNow() + '</span>\n';
-	if (auth.id != environnement.crtUser.id) {
+	if (environnement.crtUser != undefined && auth.id != environnement.crtUser.id) {
 		if(auth.contact)
 			result += '<button onclick="unfollow(' + auth.id + ')" class="follow-button btn btn-danger" title="Ne plus suivre"><span class="fui-cross"></span></a></button>\n';
 		else

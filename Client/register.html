@@ -35,6 +35,35 @@
 	
 	<!--BODY-->
 	<body onload="init()" class="login-body">
+		<!-- HEADER -->
+		<header class="">
+			<div class="header-container">
+				<!-- LOGO -->
+				<div class="logo">
+					<a href="#"><img src="img/logo.png" onclick="gotoIndex()"  /></a>
+				</div>
+			
+				<!-- NAV -->
+				<nav class="">
+					<form class="navbar-form" role="search">
+						<div class="form-group">
+							<input type="text" class="form-control search-input" placeholder="Rechercher">
+						</div>
+						<button type="submit" class="login-field-icon btn btn-success search-button"><span class="fui-search"></span></button>
+						<div class="follows-only-group" title="N'afficher seulement les gazouillis des personnes que vous suivez.">
+							<input type="checkbox" name="follows-only" id="follow-only" onclick="switchFollowsOnlyIndex()" />
+							<label for="follows-only"><span class="fui-user"></span></label>
+						</div>
+					</form>
+			<!-- LOGIN/LOGOUT -->
+				<div class="logs">
+					<img src="" class="thumbnail avatar-main logs-avatar" />
+					<a href="" onclick="disconnect()" id="connexion-button" title="Deconnexion"><span class="fui-power"></span></a>
+				</div>
+				</nav>
+	
+			</div>
+		</header>
 		<div class="container" id="login-container">
 		
 		<div class="alert alert-danger alert-dismissible fade in" role="alert" id="alert-fail" style="display : none;" onclick="hideAlert(this);" > 

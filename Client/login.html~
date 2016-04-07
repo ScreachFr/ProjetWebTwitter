@@ -45,6 +45,7 @@
 				<h4 class="alert-title">Set title</h4>
 				<p class="alert-content">Set content</p>
 			</div>
+			
 			<div class="alert alert-info fade in" role="alert" id="alert-loading" style="display : none;" > 
 					<p><span class="alert-content">Set content</span><img src="img/loading3.gif" /></p>
 			</div>
