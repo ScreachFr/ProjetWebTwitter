@@ -30,6 +30,11 @@ public class DBMapper {
 	
 	public final static String JDBC_CLASS = "com.mysql.jdbc.Driver";
 
+	private static Connection crtConnection;
+	
+	public final static int DUPLICATE_P_KEY_ERROR_CODE = 1062;
+	
+	
 	public static Connection getMySQLConnection() throws SQLException {
 		try {
 			Class.forName(JDBC_CLASS);
@@ -37,9 +42,11 @@ public class DBMapper {
 			Debug.display_stack(e);
 		}
 		
+		if (crtConnection == null)
+			crtConnection = DriverManager.getConnection("jdbc:mysql://" + DBSettings.HOST + ":" + DBSettings.PORT + "/" + DBSettings.DATABASE,
+					DBSettings.LOGIN, DBSettings.PASSWORD);
 		
-		return DriverManager.getConnection("jdbc:mysql://" + DBSettings.HOST + ":" + DBSettings.PORT + "/" + DBSettings.DATABASE,
-				DBSettings.LOGIN, DBSettings.PASSWORD);
+		return crtConnection;
 	}
 
 
@@ -75,8 +82,7 @@ public class DBMapper {
 			return result;
 
 		} catch (SQLException e) {
-			
-			throw new QueryFailedException();
+			throw new QueryFailedException(e);
 		}
 
 	}

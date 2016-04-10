@@ -364,7 +364,9 @@ footer {
 }
 
 
-
+.follows-only-group {
+	display : inline-block;
+}
 
 
 
