@@ -28,7 +28,7 @@ public class SearchResult implements Comparable<SearchResult>{
 	public JSONObject toJSON() {
 		JSONObject result = new JSONObject();
 		
-		result.put(COMMENT_JSON, comment);
+		result.put(COMMENT_JSON, comment.toJSON());
 		result.put(SCORE_JSON, score);
 		
 		return result;
