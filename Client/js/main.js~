@@ -2,7 +2,7 @@ const MAIN_PAGE = "index.html";
 const LOGIN_PAGE = "login.html";
 const REGISTER_PAGE = "register.html";
 
-const SERVER_URL = " http://li328.lip6.fr:8280/gr3_dupas_gaspar/";
+const SERVER_URL = " http://li328.lip6.fr:8280/gr3_dupas_gaspard/";
 
 //Alert const
 const ALERT_TITLE = ".alert-title";
@@ -604,7 +604,7 @@ SearchResults.prototype.toHTML = function() {
 	var result = "";
 	
 	for(var i in this.results) {
-		results += this.results[i].getHtml();
+		result += this.results[i].getHtml();
 	}
 	
 	return result;

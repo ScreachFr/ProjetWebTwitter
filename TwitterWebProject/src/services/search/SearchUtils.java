@@ -237,7 +237,8 @@ public class SearchUtils {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(search("test search", -1));
+		
+		System.out.println(search("test map reduce", -1));
 	}
 	
 

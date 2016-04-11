@@ -2,8 +2,8 @@ const MAIN_PAGE = "index.html";
 const LOGIN_PAGE = "login.html";
 const REGISTER_PAGE = "register.html";
 
-const SERVER_URL = " http://li328.lip6.fr:8280/gr3_dupas_gaspar/";
-
+//const SERVER_URL = " http://li328.lip6.fr:8280/gr3_dupas_gaspard/";
+const SERVER_URL = " http://agaspard.freeboxos.fr:8080/gr3_dupas_gaspard/";
 //Alert const
 const ALERT_TITLE = ".alert-title";
 const ALERT_CONTENT = ".alert-content";

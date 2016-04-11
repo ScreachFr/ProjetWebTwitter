@@ -50,6 +50,12 @@
 				<servlet-name>Search</servlet-name> 
 				<servlet-class>services.search.Search</servlet-class> 
 			</servlet>
+			<servlet> 
+				<servlet-name>AutoMapReduce</servlet-name> 
+				<servlet-class>services.search.AutoMapReduce</servlet-class>
+				<load-on-startup>1</load-on-startup> 
+			</servlet>
+			
 			
 		<!-- Connection test -->
 			<servlet> 
