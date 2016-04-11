@@ -46,9 +46,9 @@
 			
 				<!-- NAV -->
 				<nav class="">
-					<form class="navbar-form" role="search">
+					<form class="navbar-form" role="search" onSubmit="search(this); return false;">
 						<div class="form-group">
-							<input type="text" class="form-control search-input" placeholder="Rechercher">
+							<input type="text" id="query" class="form-control search-input" placeholder="Rechercher">
 						</div>
 						<button type="submit" class="login-field-icon btn btn-success search-button"><span class="fui-search"></span></button>
 						<div class="follows-only-group" title="N'afficher seulement les gazouillis des personnes que vous suivez.">
@@ -128,12 +128,16 @@
 				<div class=" message-container">			
 				
 					<div class="write-message">
-						<div class="write-message-content">
+						<div class="write-message-content" >
 							<img src="" class="thumbnail avatar-main" />
 							<form  onsubmit="handleCommentSending(this); return false;">
 								<input class="form-control" id="write-message-input" name="content" type="text" placeholder="Quoi de neuf ?">	
 								<button type="submit"  class="btn btn-primary" ><span class="fui-bubble"></span></button>
 							</form>
+						</div>
+						
+						<div class="search-element search-title" style="display : none;">
+							<h5>Resultats pour : <span class="search-query"></span></h5>
 						</div>
 					</div>
 
@@ -151,7 +155,7 @@
 		</main>
 		
 		<footer class="col-md-12">
-			Par <a href="mailto:a.gaspardcilia@gmail.com">Alexandre GC</a> 2016. Ce site internet est totalement original, toute ressemblance fortuite avec par exemple <a href="http://www.twitter.com" target="_blank">Twitter</a> est pure coĩncidence. Ma mauvaise foi n'engage que moi.
+			Par <a href="mailto:">Marin D</a> et <a href="mailto:a.gaspardcilia@gmail.com">Alexandre GC</a> 2016. Ce site internet est totalement original, toute ressemblance fortuite avec par exemple <a href="http://www.twitter.com" target="_blank">Twitter</a> est pure coĩncidence. Notre mauvaise foi n'engage que nous.
 		</footer>	
 		
 	</body>

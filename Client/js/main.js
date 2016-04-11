@@ -53,6 +53,8 @@ const GET_COMMENT_URL = "comment/get";
 const FOLLOW_URL = "follow/add";
 const UNFOLLOW_URL = "follow/remove";
 
+const SEARCH_URL = "comments/search";
+
 const REGISTER_LOGIN = "login";
 const REGISTER_PASSWORD = "password";
 const REGISTER_FNAME = "fname";
@@ -75,6 +77,15 @@ function init() {
 	environnement.errorUser = new User(-1, "Error", "Unknown", "User" 
 		, "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm"
 		, false);
+	
+	
+	//hide nav form if user is not in index
+	var tmp = window.location.href.split(/(\/)/gim);
+	var crtFile = tmp[tmp.length-1];
+	console.log(crtFile);
+	if (crtFile != "index.html") {
+		hideSeachForm();
+	}
 	
 	if(Cookies.get(CRT_USER_CK) !== undefined) {
 		environnement.crtUser = User.fromJSON(Cookies.getJSON(CRT_USER_CK));
@@ -212,8 +223,10 @@ function fillIndexComments(followsOnly) {
 				$(COMMENTS_MAIN_CONTAINER).empty();
 				
 				for (var i in comments) {
+					environnement.comments[comments[i].id +""] = 1;
 					$(COMMENTS_MAIN_CONTAINER).append(comments[i].getHtml());
 				}
+				
 				autoResize();
 			} else {
 				alertFail("Echec", "Le server a renvoyé une erreur."
@@ -536,7 +549,7 @@ Comment.prototype.getHtml = function() {
 			result += '<button onclick="unfollow(' + auth.id + ')" class="follow-button btn btn-danger" title="Ne plus suivre"><span class="fui-cross"></span></a></button>\n';
 		else
 			result += '<button onclick="follow(' + auth.id + ')" class="follow-button btn btn-info" title="Suivre"><span class="fui-plus"></span></a></button>\n';
-	}
+	} 
 	result += '<p class="MsgContent" >\n';
 	result += integratedContent;
 	result += '</p>\n';
@@ -575,27 +588,6 @@ SearchResults.prototype.getHtml = function(){
 	
 }
 
-
-/*
-SearchResults.revival = function(key, value) {
-	switch (key) {
-		case "date" :
-			return new Date(value);
-		case "userid" :	
-			return new User(value.id, value.login, value.contact);
-		case "" :
-			return new SearchResults(value.results, value.query, value.contactOnly, value.author, value.date);
-			
-		default :
-			if (isNumber(key)) {
-				return new Comment(value.id, value.author, value.content, value.date, value.score);
-			} else {
-				return value;	
-			}
-	}
-}
-
-*/
 
 SearchResults.fromJSON = function(j) {
 	var result = {};
@@ -772,6 +764,7 @@ function sendComment(author, content) {
 }
 
 function addCommentToMain(comment) {
+	environnement.comments[comment.id + ""] = 1;
 	$(COMMENTS_MAIN_CONTAINER).prepend(comment.getHtml());
 }
 
@@ -862,6 +855,60 @@ function fetchNewComments() {
 
 
 
+function search(searchForm) {
+	var query = searchForm.query.value;
+	
+	if (query != "") {
+		switchToSearch(query);
+		alertLoading("Recherche");
+		$(COMMENTS_MAIN_CONTAINER).empty();
+		
+		
+		var request = $.ajax({
+			url: SERVER_URL + SEARCH_URL,
+			type: 'post',
+			data:  "key=" + environnement.key + "&idtounfollow=" + idToUnfollow,
+			dataType: "json",
+			success: function(data) {
+				hideLoading();				
+				if(data.errorMessage == undefined) {
+					environnement.users[idToUnfollow+""].contact = false;
+					environnement.crtUser.nbFollows--;
+					Cookies.set(CRT_USER_CK, environnement.crtUser.toArray());
+					$("#Follows-v").text(parseInt($("#Follows-v").text())-1);
+					changeFollowButton(idToUnfollow, false);
+				} else {
+					alertFail("Echec", "Le server a renvoyé une erreur."
+					, new ServerError(data.errorMessage, data.errorCode));
+				}
+				
+				hideLoading();
+			}, 
+			error: function (xhr, ajaxOptions, thrownError) {
+				alertFail("Erreur", "Erreur de communication avec le server.");
+		  		hideLoading();
+		  	}
+	
+		});
+	}
+	
+	
+	
+}
+
+
+function switchToSearch(query) {
+	$(".write-message-content").hide();	
+	$(".search-element").show();
+	$(".search-query").text(query);
+}
+
+
+
+
+function hideSeachForm() {
+	$(".navbar-form").hide();
+}
 
 
 

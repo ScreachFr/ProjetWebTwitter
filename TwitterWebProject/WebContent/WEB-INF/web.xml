@@ -46,6 +46,10 @@
 				<servlet-name>GetComment</servlet-name> 
 				<servlet-class>services.comments.GetComment</servlet-class> 
 			</servlet>
+			<servlet> 
+				<servlet-name>Search</servlet-name> 
+				<servlet-class>services.search.Search</servlet-class> 
+			</servlet>
 			
 		<!-- Connection test -->
 			<servlet> 
@@ -58,7 +62,7 @@
 				<servlet-name>GetUser</servlet-name> 
 				<servlet-class>services.user.GetUser</servlet-class> 
 			</servlet>
-	
+			
 	<!-- Template
 	
 	<servlet> 
@@ -113,6 +117,10 @@
 			<servlet-mapping> 
 				<servlet-name>GetComment</servlet-name> 
 				<url-pattern>/comment/get</url-pattern> 
+			</servlet-mapping>
+			<servlet-mapping> 
+				<servlet-name>Search</servlet-name> 
+				<url-pattern>/comment/search</url-pattern> 
 			</servlet-mapping>
 			
 		<!-- Connection test -->

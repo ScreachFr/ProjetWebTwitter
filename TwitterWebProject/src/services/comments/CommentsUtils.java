@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -244,6 +245,30 @@ public class CommentsUtils {
 		return result;
 	}
 	
+	public static Comment getComment(String commentId) throws SQLException {
+		Comment result;
+		Map<String, Object> args = new HashMap<>();
+		FindIterable<Document> qResult;
+		Document document = null;
+		args.put(COMMENT_ID_MONGO, new ObjectId(commentId));
+		
+		qResult = MongoMapper.executeGet(COMMENT_COLLECTION_NAME, args, 0);
+		
+		document = qResult.first();
+		
+		
+		try {
+			result = new Comment(document.get(COMMENT_ID_MONGO).toString(), document.getInteger(USER_ID_MONGO, 0), document.getString(AUTHOR_LOGIN_MONGO), DBMapper.parseDate(document.getString(DATE_MONGO)),
+					document.getString(CONTENT_MONGO));
+		} catch (NullPointerException  e) {
+			return null;
+		}
+		
+		return result;
+	}
+	
+	
+	
 	public static void main(String[] args) {
 //		String key = (String) AuthenticationUtils.login("debug", "password").get("key");
 
@@ -251,8 +276,13 @@ public class CommentsUtils {
 
 //		System.out.println(getComments(-1, 0, 15));
 
-		
-		System.out.println(getCommentsDependsOnTime(DBMapper.getTimeNow(), 5, Operator.LT, -1));
+		try {
+			System.out.println(getComment("570543129966cc5c436fdaf5"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		System.out.println(getCommentsDependsOnTime(DBMapper.getTimeNow(), 5, Operator.LT, -1));
 	}
 }
 
