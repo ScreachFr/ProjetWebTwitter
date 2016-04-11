@@ -49,9 +49,11 @@ const REGISTER_URL = "user/create";
 
 const ADD_COMMENT_URL = "comment/add";
 const GET_COMMENT_URL = "comment/get";
+const SEARCH_URL = "comment/search";
 
 const FOLLOW_URL = "follow/add";
 const UNFOLLOW_URL = "follow/remove";
+
 
 const REGISTER_LOGIN = "login";
 const REGISTER_PASSWORD = "password";
@@ -560,7 +562,7 @@ Comment.prototype.getHtml = function() {
 
 
 function SearchResults(results, query, contactOnly, author, date) {
-	this.result = result;
+	this.results = results;
 	this.contactOnly = contactOnly;
 	this.author = author;
 	
@@ -570,22 +572,43 @@ function SearchResults(results, query, contactOnly, author, date) {
 	
 	this.query = query;
 	
-	environnement.searchResults = this;	
 }
 
-SearchResults.prototype.getHtml = function(){
+
+
+SearchResults.fromJSON_trueVersion = function(j) {
+	var ret;
+	
+	var comments = {};
+	var query = j.query;
+	
+	var results = j.results;
+	var crtComment;
+	
+	
+	for (var i in results) {
+		crtComment = Comment.fromJSON(results[i].comment);
+		crtComment.score = results[i].score;
+		comments[i] = crtComment;
+	}
+	
+	console.log(query);
+	console.log(comments);
+	
+	ret = new SearchResults(comments, query, false, 0);
+
+	return ret;
+}
+
+SearchResults.prototype.toHTML = function() {
 	var result = "";
 	
-	result += "<p>Put html here.</p>";
-	
-	for (var i in this.results) {
-		results += "<p>Put more html here.</p>";
+	for(var i in this.results) {
+		results += this.results[i].getHtml();
 	}
 	
 	return result;
-	
 }
-
 
 SearchResults.fromJSON = function(j) {
 	var result = {};
@@ -865,16 +888,15 @@ function search(searchForm) {
 		var request = $.ajax({
 			url: SERVER_URL + SEARCH_URL,
 			type: 'post',
-			data:  "key=" + environnement.key + "&idtounfollow=" + idToUnfollow,
+			data:  "query=" + query,
 			dataType: "json",
 			success: function(data) {
-				hideLoading();				
 				if(data.errorMessage == undefined) {
-					environnement.users[idToUnfollow+""].contact = false;
-					environnement.crtUser.nbFollows--;
-					Cookies.set(CRT_USER_CK, environnement.crtUser.toArray());
-					$("#Follows-v").text(parseInt($("#Follows-v").text())-1);
-					changeFollowButton(idToUnfollow, false);
+					var result = SearchResults.fromJSON_trueVersion(data);
+					
+					console.log(result);
+					
+					$(COMMENTS_MAIN_CONTAINER).prepend(result.toHTML());
 				} else {
 					alertFail("Echec", "Le server a renvoyé une erreur."
 					, new ServerError(data.errorMessage, data.errorCode));
@@ -883,6 +905,7 @@ function search(searchForm) {
 				hideLoading();
 			}, 
 			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(xhr);
 				alertFail("Erreur", "Erreur de communication avec le server.");
 		  		hideLoading();
 		  	}
