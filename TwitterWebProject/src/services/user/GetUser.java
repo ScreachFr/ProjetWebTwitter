@@ -18,7 +18,7 @@ public class GetUser extends HttpServlet {
 
 	private final static String PARAM_ID = "id";
 	private final static String PARAM_YOUR_ID = "yourid";
-	private final static String PARAM_INCLUDE_STATS = "inludestats";
+	private final static String PARAM_INCLUDE_STATS = "includestats";
 
 
 	@Override

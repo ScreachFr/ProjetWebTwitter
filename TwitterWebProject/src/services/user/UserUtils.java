@@ -186,6 +186,6 @@ public class UserUtils {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(getUserToJSON(13, 5, true));
+		System.out.println(getUserToJSON(6, 5, true));
 	}
 }

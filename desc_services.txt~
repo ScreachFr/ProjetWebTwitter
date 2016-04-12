@@ -240,28 +240,12 @@ Description des services
 	Paramètres en entrée
 		query : Chaine de charactères à rechercher.
 	Format de sortie
-		JSON
 	Exemple de sortie
-		{"query":"test","results":[{"score":2.496741107435003,"comment":{"date":"2016-04-03 20:31:38","author_login":"Chnapy","_id":"5701618a9966cc697057e76b","userid":13,"content":"test"}}, {"score":1.2483705537175016,"comment":{"date":"2016-04-06 14:29:57","author_login":"debug","_id":"570501459966cc45e63deb23","userid":5,"content":"test getComment"}}, {"score":0.8322470358116677,"comment":{"date":"2016-04-11 16:21:33","author_login":"debug","_id":"570bb2ed9966cc76a0112d60","userid":5,"content":"test map reduce"}}, {"score":0.6241852768587508,"comment":{"date":"2016-03-28 15:08:13","author_login":"Screach","_id":"56f92cbd5474017330576029","userid":6,"content":"Message basique de test."}}, {"score":0.19205700826423103,"comment":{"date":"2016-03-28 15:08:15","author_login":"debug","_id":"56f92cbf547401733057602b","userid":5,"content":"Message basique de test avec musique spotify. https:\/\/open.spotify.com\/track\/1BUxKj2M9PDgm7Ie8YaVdb"}}]}
 	Erreurs possible
-		none
 	Avancement du service
-		Terminé
 	Classes JAVA en rapport avec le web service
-		services.search.*
-		import database.DBMapper;
-		database.DataBaseErrors;
-		database.DBMapper.QueryType;
-		database.MongoMapper;
-		database.exceptions.CannotConnectToDatabaseException;
-		database.exceptions.QueryFailedException;
-		services.ServicesTools;
-		services.comments.Comment;
-		services.comments.CommentsUtils;
-		utils.Debug;
-		utils.FileLoader;
 	Information additionnelles
-		none
+	
 	
 	Nom du web service
 	URL du web service

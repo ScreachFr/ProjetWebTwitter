@@ -438,6 +438,11 @@ function register(element) {
 	
 }
 
+//******************
+//*  Alerts        *
+//******************
+
+
 
 //Basique server error use in error alerts.
 function ServerError(message, code) {
@@ -741,7 +746,7 @@ function search(searchForm) {
 	//Don't do anything if there is no query in input.
 	if (query != "") {
 		//Switch view to search mode.
-		switchToSearch(query);
+		switchToSearch(htmlEntities(query));
 		alertLoading("Recherche");
 		$(COMMENTS_MAIN_CONTAINER).empty();
 		
