@@ -237,8 +237,13 @@ public class SearchUtils {
 	}
 
 	public static void main(String[] args) {
-		
-		System.out.println(search("test map reduce", -1));
+		try {
+			mapReduceComments();
+		} catch (SQLException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		System.out.println(search("test map reduce", -1));
 	}
 	
 

@@ -53,7 +53,7 @@
 			<servlet> 
 				<servlet-name>AutoMapReduce</servlet-name> 
 				<servlet-class>services.search.AutoMapReduce</servlet-class>
-				<load-on-startup>1</load-on-startup> 
+<!-- 				<load-on-startup>1</load-on-startup>  -->
 			</servlet>
 			
 			

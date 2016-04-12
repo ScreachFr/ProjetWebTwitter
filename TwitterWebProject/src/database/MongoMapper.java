@@ -31,11 +31,16 @@ public class MongoMapper {
 	private final static String DATE_PATTERN = "HH:mm:ss dd/MM/YY";
 	private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
 
+	private static MongoDatabase db;
+	
 
 	public static MongoDatabase getMongoDBConnection() throws SQLException {
 
 		MongoClient m = new MongoClient(HOST, PORT);
-		MongoDatabase db = m.getDatabase(DATABASE);
+		
+		if (db == null)
+			db = m.getDatabase(DATABASE);
+		
 		return db;
 	}
 	
