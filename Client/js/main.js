@@ -148,6 +148,8 @@ function autoResize() {
 function setConnectedUserUI() {
 	var user = environnement.crtUser;
 	
+	console.log(user);
+	
 	var login = user.login;
 	var name = user.fName + " " + user.lName;
 	
@@ -335,6 +337,7 @@ function connect(login, password) {
 				//Set connected user cookies
 				Cookies.set(CRT_USER_CK, user.toArray());
 				Cookies.set(KEY_CK, j.key);
+				
 				
 				gotoIndex();
 				hideLoading();
@@ -634,7 +637,7 @@ User.fromJSON = function(j) {
 		if(j.stats.follows != undefined)
 			result.nbFollows = j.stats.follows;
 		if(j.stats.followers != undefined)
-			result.nBFollowers = j.stats.followers;
+			result.nbFollowers = j.stats.followers;
 		if(j.stats.comments != undefined)
 			result.nbMessages = j.stats.comments;
 	}
@@ -1005,6 +1008,9 @@ function sendComment(author, content) {
 				hideLoading();				
 				if(data.errorMessage == undefined) {
 					addCommentToMain(Comment.fromJSON(data.comment));
+					environnement.crtUser.nbMessages++;
+					Cookies.set(CRT_USER_CK, environnement.crtUser.toArray());
+					
 					$("#write-message-input").val("");
 					$("#Comments-v").text(parseInt($("#Comments-v").text())+1);
 				} else {

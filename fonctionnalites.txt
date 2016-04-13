@@ -1,0 +1,19 @@
+Liste des fonctionnalités :
+	Fait :
+		Connexion
+		Deconnexion
+		Inscription
+		Rédaction de message
+		Visualisation de message
+		Statisitiques du compte (nombre de message, follows, followers)
+		Follow
+		Unfollow
+		Recherche
+		Map reduce
+		Changement de mot de passe (partie server)
+		Integration multimedia des messages
+		
+	Pas Fait :
+		Actualisation automatique des messages (partie client)
+		Visualisation des profiles
+		Changement de mot de passe (partie client)
