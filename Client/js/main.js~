@@ -123,9 +123,10 @@ function init() {
 		fillIndexComments(followsOnly);
 	//User is not connected	
 	} else {
-		setNotConnectedUserIU();
-		fillIndexComments(false);
-		
+		if (crtFile == "index.html") {
+			setNotConnectedUserIU();
+			fillIndexComments(false);
+		}
 	}
 	
 	
@@ -1008,7 +1009,7 @@ function sendComment(author, content) {
 				hideLoading();				
 				if(data.errorMessage == undefined) {
 					addCommentToMain(Comment.fromJSON(data.comment));
-					environnement.crtUser.stat.comments++;
+					environnement.crtUser.nbMessages++;
 					Cookies.set(CRT_USER_CK, environnement.crtUser.toArray());
 					
 					$("#write-message-input").val("");

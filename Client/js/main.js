@@ -123,9 +123,10 @@ function init() {
 		fillIndexComments(followsOnly);
 	//User is not connected	
 	} else {
-		setNotConnectedUserIU();
-		fillIndexComments(false);
-		
+		if (crtFile == "index.html") {
+			setNotConnectedUserIU();
+			fillIndexComments(false);
+		}
 	}
 	
 	
@@ -1034,6 +1035,7 @@ function sendComment(author, content) {
 function addCommentToMain(comment) {
 	environnement.comments[comment.id + ""] = 1;
 	$(COMMENTS_MAIN_CONTAINER).prepend(comment.getHtml());
+	autoResize();
 }
 
 
