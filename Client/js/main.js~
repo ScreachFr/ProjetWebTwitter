@@ -136,6 +136,11 @@ function init() {
 //*  Utils         *
 //******************
 
+function setDefaultAvatar() {
+	$(AVATAR_MAIN).each(function() {
+		$(this).attr("src", addAvatarSize(DFT_AVATAR, DEFAULT_AVATAR_SIZE));
+	});
+}
 
 
 //Resize images from comments
@@ -792,6 +797,7 @@ function switchToSearch(query) {
 	$(".write-message-content").hide();	
 	$(".search-element").show();
 	$(".search-query").text(query);
+	document.title = 'Recherche : "' + query + '" | Gazouilleur';
 }
 
 
@@ -1035,6 +1041,7 @@ function sendComment(author, content) {
 function addCommentToMain(comment) {
 	environnement.comments[comment.id + ""] = 1;
 	$(COMMENTS_MAIN_CONTAINER).prepend(comment.getHtml());
+	autoResize();
 }
 
 

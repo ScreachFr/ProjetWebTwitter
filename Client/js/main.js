@@ -89,6 +89,7 @@ function init() {
 	environnement.errorUser = new User(-1, "Error", "Unknown", "User" 
 									, DFT_AVATAR, false);
 	
+	setDefaultAvatar();
 	
 	//hide nav form if user is not in index
 	var tmp = window.location.href.split(/(\/)/gim);
@@ -136,6 +137,11 @@ function init() {
 //*  Utils         *
 //******************
 
+function setDefaultAvatar() {
+	$(AVATAR_MAIN).each(function() {
+		$(this).attr("src", addAvatarSize(DFT_AVATAR, DEFAULT_AVATAR_SIZE));
+	});
+}
 
 
 //Resize images from comments
@@ -792,6 +798,7 @@ function switchToSearch(query) {
 	$(".write-message-content").hide();	
 	$(".search-element").show();
 	$(".search-query").text(query);
+	document.title = 'Recherche : "' + query + '" | Gazouilleur';
 }
 
 

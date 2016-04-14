@@ -21,6 +21,7 @@ import database.exceptions.QueryFailedException;
 import services.ServicesTools;
 import services.comments.Comment;
 import services.comments.CommentsUtils;
+import utils.Debug;
 import utils.FileLoader;
 
 public class SearchUtils {
@@ -36,7 +37,9 @@ public class SearchUtils {
 	private final static String DF_INSERT_QUERY = "INSERT INTO idfs values (?, ?);";
 
 	private final static String DF_UPDATE_QUERY = "UPDATE idfs SET df=? WHERE word=?;";
+	private final static String TF_UPDATE_QUERY = "UPDATE tfs SET tf=? WHERE docid=? AND word=?;";
 
+	
 	private final static String SEARCH_QUERY 		= "SELECT docid, (idfs.df + tfs.tf) as score FROM idfs INNER JOIN tfs ON (idfs.word = tfs.word) WHERE idfs.word IN (?) GROUP BY docid ORDER BY score DESC LIMIT 20;";
 	private final static String GET_DF_QUERY 		= "SELECT df FROM idfs WHERE word = ?;";
 	private final static String GET_TF_QUERY 		= "SELECT tf FROM tfs WHERE docid = ? AND word = ?;";
@@ -109,11 +112,16 @@ public class SearchUtils {
 	}
 
 	private static void putTfToDB(String docID, String word, double tf) throws CannotConnectToDatabaseException, QueryFailedException {
+		Debug.display_notice("updating " + docID + ", " + word + " with " + tf);
 		try {
 			DBMapper.executeQuery(TF_INSERT_QUERY, QueryType.INSERT, docID , word, tf);
 		} catch (QueryFailedException e) {
-			if(e.getSQLException().getErrorCode() != DBMapper.DUPLICATE_P_KEY_ERROR_CODE)
+			if(e.getSQLException().getErrorCode() == DBMapper.DUPLICATE_P_KEY_ERROR_CODE)
+				DBMapper.executeQuery(TF_UPDATE_QUERY, QueryType.UPDATE, tf, docID, word);
+			else {
+				e.getSQLException().printStackTrace();
 				throw e;
+			}
 		}
 	}
 
@@ -132,11 +140,16 @@ public class SearchUtils {
 	}
 
 	private static void putDfToDB(String word, double df) throws CannotConnectToDatabaseException, QueryFailedException {
+		Debug.display_notice("updating " + word + " with " + df);
 		try {
 			DBMapper.executeQuery(DF_INSERT_QUERY, QueryType.INSERT, word, df);
 		} catch (QueryFailedException e) {
-			if(e.getSQLException().getErrorCode() != DBMapper.DUPLICATE_P_KEY_ERROR_CODE)
+			if(e.getSQLException().getErrorCode() == DBMapper.DUPLICATE_P_KEY_ERROR_CODE)
 				DBMapper.executeQuery(DF_UPDATE_QUERY, QueryType.UPDATE, df, word);
+			else { 
+				e.getSQLException().printStackTrace();
+				throw e;
+			}
 		}
 	}
 
@@ -236,7 +249,15 @@ public class SearchUtils {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(search("Message basique de test avec", -1));
+			try {
+				mapReduceComments();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	
 
