@@ -21,7 +21,6 @@ import database.exceptions.QueryFailedException;
 import services.ServicesTools;
 import services.comments.Comment;
 import services.comments.CommentsUtils;
-import utils.Debug;
 import utils.FileLoader;
 
 public class SearchUtils {
